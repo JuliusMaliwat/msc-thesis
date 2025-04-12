@@ -46,9 +46,9 @@ conda activate "$ENV_NAME"
 
 # === Step 3: Build MVDeTr CUDA extensions ===
 echo "=== Step 3: Build MVDeTr CUDA extensions ==="
-cd "$MVDETR_DIR"
+cd "$MVDETR_DIR/multiview_detector/models/ops"
 bash make.sh
-cd ../../
+cd ../../../../../
 
 # === Step 4: Download Wildtrack dataset ===
 echo "=== Step 4: Download Wildtrack dataset ==="
@@ -66,7 +66,7 @@ fi
 
 # === Step 5: Download pretrained model ===
 echo "=== Step 5: Download pretrained model ==="
-if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
+if [ ! -f "$MODEL_DIR/$MODEL_CHECKPOINT/$MODEL_FILE" ]; then
   mkdir -p "$MODEL_DIR/$MODEL_CHECKPOINT"
   echo "Downloading pretrained model..."
   gdown "$MODEL_GDOWN_ID" -O "$MODEL_DIR/$MODEL_CHECKPOINT/$MODEL_FILE"
