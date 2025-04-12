@@ -9,12 +9,15 @@ CHECKPOINT="aug_deform_trans_lr0.0005_baseR0.1_neck128_out0_alpha1.0_id0_drop0.0
 MVDETR_DIR="external/MVDeTr"
 DATASET="wildtrack"
 
-# === Step 1: Activate environment ===
+# Step 0: Set working directory as HOME
+export HOME=$(pwd)
+
+# Step 1: Activate environment
 echo "Activating conda environment '$ENV_NAME'..."
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$ENV_NAME"
 
-# === Step 2: Run inference ===
+# Step 2: Run inference
 echo "Running inference with MVDeTr..."
 cd "$MVDETR_DIR"
 
