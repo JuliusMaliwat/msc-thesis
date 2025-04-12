@@ -1,30 +1,26 @@
 #!/bin/bash
 
-# Stop the script if any command fails
+# Stop if any command fails
 set -e
 
-# === CONFIGURATION ===
+# === CONFIG ===
 ENV_NAME="mvdetr"
 ENV_FILE="environment_mvdetr.yml"
 MVDETR_REPO="https://github.com/hou-yz/MVDeTr.git"
 MVDETR_DIR="external/MVDeTr"
+MODEL_DIR="external/MVDeTr/logs/wildtrack"
+MODEL_CHECKPOINT="aug_deform_trans_lr0.0005_baseR0.1_neck128_out0_alpha1.0_id0_drop0.0_dropcam0.0_worldRK4_10_imgRK12_10_2021-08-02_17-28-02"
 MODEL_FILE="MultiviewDetector.pth"
 MODEL_GDOWN_ID="10SqNu2JPTNu0ZJKGWvyp2Syqq776ztI9"
-LOG_DIR="external/MVDeTr/logs/wildtrack/aug_deform_trans_lr0.0005_baseR0.1_neck128_out0_alpha1.0_id0_drop0.0_dropcam0.0_worldRK4_10_imgRK12_10_2021-08-02_17-28-02"
 DATA_DIR="Data/Wildtrack"
 DATA_ZIP="wildtrack.zip"
 DATA_GDOWN_ID="1pdCvSOqtEtFPi0P_16GX2YeliYg5OtTS"
 
-# === Step 0: Check for required commands ===
+# === Step 0: Check dependencies ===
 echo "=== Step 0: Check dependencies ==="
 if ! command -v conda &> /dev/null; then
   echo "Error: Conda is not installed. Please install Miniconda or Anaconda first."
   exit 1
-fi
-
-if ! command -v gdown &> /dev/null; then
-  echo "Error: gdown is not installed. Installing..."
-  pip install gdown
 fi
 
 # === Step 1: Clone MVDeTr repository ===
@@ -68,17 +64,14 @@ else
   echo "Wildtrack dataset already exists."
 fi
 
-# === Step 5: Download pretrained model directly into logs directory ===
+# === Step 5: Download pretrained model ===
 echo "=== Step 5: Download pretrained model ==="
-if [ ! -d "$LOG_DIR" ]; then
-  mkdir -p "$LOG_DIR"
-fi
-
-if [ ! -f "$LOG_DIR/$MODEL_FILE" ]; then
-  gdown "$MODEL_GDOWN_ID" -O "$LOG_DIR/$MODEL_FILE"
-  echo "Pretrained model downloaded into logs directory."
+if [ ! -f "$MODEL_DIR/$MODEL_FILE" ]; then
+  mkdir -p "$MODEL_DIR/$MODEL_CHECKPOINT"
+  echo "Downloading pretrained model..."
+  gdown "$MODEL_GDOWN_ID" -O "$MODEL_DIR/$MODEL_CHECKPOINT/$MODEL_FILE"
 else
-  echo "Pretrained model already exists in logs directory."
+  echo "Pretrained model already exists."
 fi
 
 echo "=== Setup completed successfully ==="
