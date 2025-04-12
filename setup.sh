@@ -25,11 +25,6 @@ if ! command -v conda &> /dev/null; then
   exit 1
 fi
 
-if ! command -v gdown &> /dev/null; then
-  echo "gdown not found. Installing with conda..."
-  conda install -y -c conda-forge gdown
-fi
-
 # === Step 1: Clone MVDeTr repository ===
 echo "=== Step 1: Clone MVDeTr repository ==="
 if [ ! -d "$MVDETR_DIR" ]; then
@@ -73,12 +68,14 @@ fi
 
 # === Step 5: Download pretrained model ===
 echo "=== Step 5: Download pretrained model ==="
-if [ ! -f "$MODEL_DIR/$MODEL_CHECKPOINT/$MODEL_FILE" ]; then
-  mkdir -p "$MODEL_DIR/$MODEL_CHECKPOINT"
+MODEL_PATH="$MODEL_DIR/$MODEL_CHECKPOINT/$MODEL_FILE"
+
+if [ ! -f "$MODEL_PATH" ]; then
+  mkdir -p "$(dirname "$MODEL_PATH")"
   echo "Downloading pretrained model..."
-  gdown "$MODEL_GDOWN_ID" -O "$MODEL_DIR/$MODEL_CHECKPOINT/$MODEL_FILE"
+  gdown "$MODEL_GDOWN_ID" -O "$MODEL_PATH"
 else
-  echo "Pretrained model already exists."
+  echo "Pretrained model already exists at $MODEL_PATH."
 fi
 
 echo "=== Setup completed successfully ==="
