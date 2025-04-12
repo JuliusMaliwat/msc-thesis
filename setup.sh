@@ -14,13 +14,20 @@ MODEL_FILE="MultiviewDetector.pth"
 MODEL_GDOWN_ID="10SqNu2JPTNu0ZJKGWvyp2Syqq776ztI9"
 DATA_DIR="Data/Wildtrack"
 DATA_ZIP="wildtrack.zip"
-DATA_GDOWN_ID="1pdCvSOqtEtFPi0P_16GX2YeliYg5OtTS"
+KAGGLE_USERNAME="juliusmaliwat"
+KAGGLE_KEY="6a89e1598210c75a2387475e2695ea50"
+KAGGLE_URL="https://www.kaggle.com/api/v1/datasets/download/juliusmaliwat/wildtrack"
 
 # === Step 0: Check dependencies ===
 echo "=== Step 0: Check dependencies ==="
 if ! command -v conda &> /dev/null; then
   echo "Error: Conda is not installed. Please install Miniconda or Anaconda first."
   exit 1
+fi
+
+if ! command -v gdown &> /dev/null; then
+  echo "gdown not found. Installing with conda..."
+  conda install -y -c conda-forge gdown
 fi
 
 # === Step 1: Clone MVDeTr repository ===
@@ -50,12 +57,12 @@ cd "$MVDETR_DIR/multiview_detector/models/ops"
 bash make.sh
 cd ../../../../../
 
-# === Step 4: Download Wildtrack dataset ===
+# === Step 4: Download Wildtrack dataset via Kaggle ===
 echo "=== Step 4: Download Wildtrack dataset ==="
 if [ ! -d "$DATA_DIR" ]; then
   mkdir -p Data
-  echo "Downloading Wildtrack dataset..."
-  gdown "$DATA_GDOWN_ID" -O "Data/$DATA_ZIP"
+  echo "Downloading Wildtrack dataset from Kaggle..."
+  curl -L -u $KAGGLE_USERNAME:$KAGGLE_KEY -o "Data/$DATA_ZIP" "$KAGGLE_URL"
   echo "Unzipping Wildtrack dataset..."
   unzip "Data/$DATA_ZIP" -d Data/
   rm "Data/$DATA_ZIP"
