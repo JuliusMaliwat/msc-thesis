@@ -55,9 +55,6 @@ else
   conda env create -f "$ENV_FILE"
 fi
 
-# Activate Conda environment
-source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate "$ENV_NAME"
 
 # === Step 2b: Create Conda environment for tracking ===
 echo "=== Step 2b: Create Conda environment for tracking ==="
@@ -73,6 +70,9 @@ fi
 # Activate Conda environment
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$ENV_NAME"
+
+echo "dActive Conda environment: $(conda env list | grep '^\*' | awk '{print $1}')"
+
 
 # === Step 3: Build MVDeTr CUDA extensions ===
 echo "=== Step 3: Build MVDeTr CUDA extensions ==="
