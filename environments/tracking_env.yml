@@ -15,6 +15,7 @@ dependencies:
   - torchvision=0.17
   - pytorch-cuda=12.1
   - yq
+  - opencv
   - pip
   - pip:
       - torchreid
