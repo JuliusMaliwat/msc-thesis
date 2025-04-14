@@ -56,9 +56,10 @@ echo "Selected detector: $DETECTOR"
 # Step 1: Detection
 # ======================================
 
+
 if [ "$DETECTOR" = "mvdetr" ]; then
   echo "Running detection with MVDetr..."
-  conda run -n mvdetr_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+  conda run -n mvdetr_env --cwd external/MVDeTr python ../../scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
 elif [ "$DETECTOR" = "another_model" ]; then
   echo "Running detection with Another Model..."
   conda run -n another_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
@@ -66,6 +67,7 @@ else
   echo "Error: Detector not recognized: $DETECTOR"
   exit 1
 fi
+
 
 echo "Detection completed. Detections saved in: $EXPERIMENT_DIR/detections.txt"
 
