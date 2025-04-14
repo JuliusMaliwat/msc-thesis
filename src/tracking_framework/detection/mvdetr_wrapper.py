@@ -96,7 +96,7 @@ class MVDetrWrapper:
         Returns:
             list: Detections [[frame_id, x, y], ...]
         """
-        output_file = os.path.join("external/MVDeTr/outputs", self.dataset, self.checkpoint, "test.txt")
+        output_file = os.path.join("external/MVDeTr/logs", self.dataset, self.checkpoint, "test.txt")
 
         if not os.path.exists(output_file):
             raise FileNotFoundError(f"MVDetr output not found at: {output_file}")
