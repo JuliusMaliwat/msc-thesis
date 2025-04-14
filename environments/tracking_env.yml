@@ -4,7 +4,6 @@ channels:
   - conda-forge
   - pytorch
   - nvidia
-  - yq
 dependencies:
   - python=3.12
   - pyyaml
@@ -14,7 +13,8 @@ dependencies:
   - pillow
   - pytorch=2.2
   - torchvision=0.17
-  - pytorch-cuda=12.1  
+  - pytorch-cuda=12.1
+  - yq
   - pip
   - pip:
       - torchreid
