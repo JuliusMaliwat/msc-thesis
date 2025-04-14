@@ -53,9 +53,17 @@ class MVDetrWrapper:
             img_kernel_size=10,
             visualize=True
         )
+        import os
 
-        print("Running MVDetr inference internally...")
-        self.mvdetr_main(args)
+        original_cwd = os.getcwd()
+        os.chdir("external/MVDeTr")
+
+        try:
+            self.mvdetr_main(args)
+            print("Running MVDetr inference internally...")
+        finally:
+            os.chdir(original_cwd)
+
 
         print("MVDetr inference completed. Parsing output...")
 

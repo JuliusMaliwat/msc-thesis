@@ -38,7 +38,7 @@ EXPERIMENT_DIR="experiments/${TIMESTAMP}_${CONFIG_NAME}"
 
 mkdir -p "$EXPERIMENT_DIR"
 
-export PYTHONPATH=$(pwd)/src:$(pwd)/external/MVDeTr
+export PYTHONPATH=$(pwd)/src
 
 
 echo "Starting experiment in: $EXPERIMENT_DIR"
@@ -59,7 +59,7 @@ echo "Selected detector: $DETECTOR"
 
 if [ "$DETECTOR" = "mvdetr" ]; then
   echo "Running detection with MVDetr..."
-  conda run -n mvdetr_env --cwd external/MVDeTr python ../../scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+  conda run -n mvdetr_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
 elif [ "$DETECTOR" = "another_model" ]; then
   echo "Running detection with Another Model..."
   conda run -n another_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
