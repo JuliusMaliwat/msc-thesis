@@ -71,13 +71,13 @@ fi
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$ENV_NAME"
 
-echo "dActive Conda environment: $(conda env list | grep '^\*' | awk '{print $1}')"
+echo "Active Conda environment: $(conda env list | grep '^\*' | awk '{print $1}')"
 
 
 # === Step 3: Build MVDeTr CUDA extensions ===
 echo "=== Step 3: Build MVDeTr CUDA extensions ==="
 cd "$MVDETR_DIR/multiview_detector/models/ops"
-bash make.sh
+source make.sh
 cd ../../../../../
 
 # === Step 4: Download Wildtrack dataset via Kaggle ===
