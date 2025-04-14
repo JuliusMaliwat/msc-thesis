@@ -15,11 +15,11 @@ class TrackerFactory:
     @staticmethod
     def build(name, params = None):
         if name == "sort_bev":
-            from tracking_framework.tracking.sort_bev import SortBEV
+            from tracking_framework.tracking.sort_bev.sort_bev import SortBEV
             return SortBEV(params)
 
         elif name == "deep_sort_bev":
-            from tracking_framework.tracking.deep_sort_bev import DeepSortBEVTracker
+            from tracking_framework.tracking.deep_sort_bev.deep_sort_bev import DeepSortBEVTracker
             return DeepSortBEVTracker(params)
 
         else:
