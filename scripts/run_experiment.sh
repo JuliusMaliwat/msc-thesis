@@ -45,7 +45,7 @@ echo "Using config file: $CONFIG_PATH"
 cp "$CONFIG_PATH" "$EXPERIMENT_DIR/config.yaml"
 
 # Extract detector name from the config file using yq
-DETECTOR=$(conda run -n tracking_env yq '.detection.name' "$CONFIG_PATH")
+DETECTOR=$(conda run -n tracking_env yq -r '.detection.name' "$CONFIG_PATH")
 
 echo "Selected detector: $DETECTOR"
 
