@@ -6,9 +6,9 @@ channels:
 dependencies:
   - python=3.8
   - pip
+  - pytorch=1.8.1=py38_cuda10.2*
+  - torchvision=0.9.1=py38_cuda10.2*
   - cudatoolkit=10.2
-  - pytorch=1.8.1
-  - torchvision=0.9.1
   - ffmpeg
   - numpy=1.19
   - matplotlib=3.3.4
