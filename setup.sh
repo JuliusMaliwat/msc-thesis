@@ -34,6 +34,18 @@ else
   echo "MVDeTr repository already cloned."
 fi
 
+# Ensure MVDeTr is a Python package by adding __init__.py
+INIT_FILE="$MVDETR_DIR/__init__.py"
+if [ ! -f "$INIT_FILE" ]; then
+  touch "$INIT_FILE"
+  echo "# Makes MVDeTr a Python package" > "$INIT_FILE"
+  echo "__version__ = '0.1'" >> "$INIT_FILE"
+  echo "Added __init__.py to MVDeTr."
+else
+  echo "__init__.py already exists in MVDeTr."
+fi
+
+
 # === Step 2: Create Conda environment ===
 echo "=== Step 2: Create Conda environment ==="
 if conda env list | grep -q "$ENV_NAME"; then
