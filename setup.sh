@@ -4,8 +4,6 @@
 set -e
 
 # === CONFIG ===
-ENV_NAME="mvdetr"
-ENV_FILE="environment_mvdetr.yml"
 MVDETR_REPO="https://github.com/hou-yz/MVDeTr.git"
 MVDETR_DIR="external/MVDeTr"
 MODEL_DIR="external/MVDeTr/logs/wildtrack"
