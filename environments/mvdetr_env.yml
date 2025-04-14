@@ -1,5 +1,6 @@
 name: mvdetr
 channels:
+  - conda-forge
   - pytorch
   - defaults
 dependencies:
