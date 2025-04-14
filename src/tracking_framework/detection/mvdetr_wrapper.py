@@ -40,8 +40,8 @@ class MVDetrWrapper:
 
         # Prepare arguments for MVDetr main
         args = Namespace(
-            dataset=self.dataset,
-            resume=self.checkpoint,
+            dataset=self.dataset,  # es. 'wildtrack'
+            resume=self.checkpoint,  # checkpoint name
             batch_size=1,
             arch="resnet18",
             world_feat="deform_trans",
@@ -51,7 +51,24 @@ class MVDetrWrapper:
             world_kernel_size=10,
             img_reduce=12,
             img_kernel_size=10,
-            visualize=True
+            visualize=True,
+
+            reID=False,  # default
+            semi_supervised=0,  # default
+            id_ratio=0,  # default
+            cls_thres=0.6,  # default
+            alpha=1.0,  # default
+            use_mse=False,  # default
+            num_workers=4,  # default
+            dropout=0.0,  # default
+            dropcam=0.0,  # default
+            epochs=10,  # default
+            lr=5e-4,  # default
+            base_lr_ratio=0.1,  # default
+            weight_decay=1e-4,  # default
+            seed=2021,  # default
+            deterministic=False,  # default
+            augmentation=True  # default
         )
         import os
 
