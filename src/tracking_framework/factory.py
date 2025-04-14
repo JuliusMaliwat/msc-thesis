@@ -1,6 +1,6 @@
 class DetectionFactory:
     @staticmethod
-    def build(name, params):
+    def build(name, params = None):
 
         if name == "mvdetr":
             from tracking_framework.detection.mvdetr_wrapper import MVDetrWrapper
@@ -13,7 +13,7 @@ class DetectionFactory:
 
 class TrackerFactory:
     @staticmethod
-    def build(name, params):
+    def build(name, params = None):
         if name == "sort_bev":
             from tracking_framework.tracking.sort_bev import SortBEV
             return SortBEV(params)
@@ -29,10 +29,10 @@ class TrackerFactory:
 
 class DatasetFactory:
     @staticmethod
-    def build(name, params):
+    def build(name):
         if name == "wildtrack":
             from tracking_framework.datasets.wildtrack import WildtrackDataset
-            return WildtrackDataset(params)
+            return WildtrackDataset()
 
         else:
             raise ValueError(f"Unknown dataset name: {name}")
