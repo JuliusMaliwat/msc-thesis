@@ -1,0 +1,20 @@
+name: tracking_env
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+  - nvidia
+
+dependencies:
+  - python=3.12
+  - pyyaml
+  - numpy
+  - scipy
+  - tqdm
+  - pillow
+  - pytorch=2.2
+  - torchvision=0.17A
+  - pytorch-cuda=12.1  
+  - pip
+  - pip:
+      - torchreid

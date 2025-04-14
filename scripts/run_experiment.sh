@@ -53,9 +53,9 @@ echo "Selected detector: $DETECTOR"
 # Step 1: Detection
 # ======================================
 
-if [ "$DETECTOR" = "mvdet" ]; then
-  echo "Running detection with MVDet..."
-  conda run -n mvdet_env python run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+if [ "$DETECTOR" = "mvdetr" ]; then
+  echo "Running detection with MVDetr..."
+  conda run -n mvdetr_env python run_detection.py --experiment_dir "$EXPERIMENT_DIR"
 elif [ "$DETECTOR" = "another_model" ]; then
   echo "Running detection with Another Model..."
   conda run -n another_env python run_detection.py --experiment_dir "$EXPERIMENT_DIR"

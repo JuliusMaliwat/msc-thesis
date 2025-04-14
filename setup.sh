@@ -46,12 +46,30 @@ else
 fi
 
 
-# === Step 2: Create Conda environment ===
-echo "=== Step 2: Create Conda environment ==="
+# === Step 2: Create Conda environment for MVDeTr ===
+echo "=== Step 2: Create Conda environment for MVDeTr ==="
+ENV_FILE="environments/mvdetr_env.yml"
+ENV_NAME="mvdetr_env"
+
 if conda env list | grep -q "$ENV_NAME"; then
   echo "Conda environment '$ENV_NAME' already exists."
 else
   conda env create -f "$ENV_FILE"
+fi
+
+# Activate Conda environment
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate "$ENV_NAME"
+
+# === Step 2b: Create Conda environment for tracking ===
+echo "=== Step 2b: Create Conda environment for tracking ==="
+TRACKING_ENV_FILE="environments/tracking_env.yml"
+TRACKING_ENV_NAME="tracking_env"
+
+if conda env list | grep -q "$TRACKING_ENV_NAME"; then
+  echo "Conda environment '$TRACKING_ENV_NAME' already exists."
+else
+  conda env create -f "$TRACKING_ENV_FILE"
 fi
 
 # Activate Conda environment
