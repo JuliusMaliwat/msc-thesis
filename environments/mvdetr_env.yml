@@ -6,8 +6,6 @@ channels:
 dependencies:
   - python=3.8
   - pip
-  - pytorch=1.8.1=py38_cuda10.2*
-  - torchvision=0.9.1=py38_cuda10.2*
   - cudatoolkit=10.2
   - ffmpeg
   - numpy=1.19
@@ -16,9 +14,12 @@ dependencies:
   - ninja
   - pillow
   - pip:
+      - torch==1.8.1+cu102
+      - torchvision==0.9.1+cu102
       - scipy==1.5.4
       - gdown
       - opencv-python
       - tqdm
       - kornia==0.5.11
       - kornia-rs
+      - --extra-index-url https://download.pytorch.org/whl/cu102
