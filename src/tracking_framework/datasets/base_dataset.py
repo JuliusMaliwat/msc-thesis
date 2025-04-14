@@ -3,7 +3,7 @@ class BaseDataset:
     Abstract base class for datasets in the tracking framework.
     """
 
-    def __init__(self, params):
+    def __init__(self, params = None):
         """
         Initialize dataset with given parameters.
 

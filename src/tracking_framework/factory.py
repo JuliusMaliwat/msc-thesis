@@ -29,7 +29,7 @@ class TrackerFactory:
 
 class DatasetFactory:
     @staticmethod
-    def build(name):
+    def build(name, params = None):
         if name == "wildtrack":
             from tracking_framework.datasets.wildtrack import WildtrackDataset
             return WildtrackDataset()
