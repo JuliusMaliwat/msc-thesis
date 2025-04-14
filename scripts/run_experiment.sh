@@ -38,6 +38,9 @@ EXPERIMENT_DIR="experiments/${TIMESTAMP}_${CONFIG_NAME}"
 
 mkdir -p "$EXPERIMENT_DIR"
 
+export PYTHONPATH=$(pwd)/src
+
+
 echo "Starting experiment in: $EXPERIMENT_DIR"
 echo "Using config file: $CONFIG_PATH"
 
