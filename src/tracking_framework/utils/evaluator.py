@@ -72,14 +72,14 @@ def evaluate_detection(predictions, ground_truth, threshold=0.5, unit_scale=0.02
     precision = (total_tp / (total_tp + total_fp)) * 100 if (total_tp + total_fp) > 0 else 0.0
 
     return {
-        "MODA": moda,
-        "MODP": modp,
-        "Recall": recall,
-        "Precision": precision,
-        "TP": total_tp,
-        "FP": total_fp,
-        "FN": total_fn,
-        "GT": total_gt
+        "MODA": round(float(moda),2),
+        "MODP": round(float(modp), 2),
+        "Recall": round(float(recall), 2),
+        "Precision": round(float(precision), 2),
+        "TP": int(total_tp),
+        "FP": int(total_fp),
+        "FN": int(total_fn),
+        "GT": int(total_gt)
     }
 
 
@@ -171,15 +171,15 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
     idf1 = (2 * total_tp / (2 * total_tp + total_fp + total_fn)) * 100 if (2 * total_tp + total_fp + total_fn) > 0 else 0.0
 
     return {
-        "MOTA": mota,
-        "IDF1": idf1,
-        "Recall": recall,
-        "Precision": precision,
-        "ID Switches": id_switches,
-        "TP": total_tp,
-        "FP": total_fp,
-        "FN": total_fn,
-        "GT": total_gt
+        "MOTA": round(float(mota), 2),
+        "IDF1": round(float(idf1), 2),
+        "Recall": round(float(recall), 2),
+        "Precision": round(float(precision), 2),
+        "ID Switches": int(id_switches),
+        "TP": int(total_tp),
+        "FP": int(total_fp),
+        "FN": int(total_fn),
+        "GT": int(total_gt)
     }
 
 def _group_by_frame(data):
@@ -197,3 +197,5 @@ def _group_by_frame(data):
         frame_id = entry[0]
         grouped[frame_id].append(entry[1:])  # Take all except frame_id
     return grouped
+
+
