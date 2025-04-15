@@ -41,8 +41,11 @@ class DeepSortBEVTracker(BaseTracker):
         embedding_dict = self._compute_embeddings(detections, dataset)
 
         # Step 2: Prepare detections by frame
+        print("Prepare detections by frame...")
         detections_by_frame = _detections_to_frame_dict(detections)
 
+
+        print("Starting algo...")
         for frame_id in sorted(detections_by_frame.keys()):
             frame_dets = detections_by_frame[frame_id]
 
