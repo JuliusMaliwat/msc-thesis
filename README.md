@@ -12,7 +12,7 @@ bash setup.sh
 
 This will create:
 - `mvdetr_env` (Python 3.8) for detection models
-- `tracking_env` (Python 3.12) for tracking algorithms
+- `tracking_env` (Python 3.10) for tracking algorithms
 
 ## Run an experiment
 
