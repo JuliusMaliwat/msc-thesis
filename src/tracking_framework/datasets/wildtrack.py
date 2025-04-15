@@ -17,6 +17,7 @@ class WildtrackDataset(BaseDataset):
     GRID_STEP = 0.025
     BBOX_WIDTH = 0.5  # meters
     BBOX_HEIGHT = 1.8  # meters
+    NB_WIDTH = 480
 
     def __init__(self):
         super().__init__()
