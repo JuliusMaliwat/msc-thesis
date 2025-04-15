@@ -89,5 +89,9 @@ class Embedder:
         norm = np.linalg.norm(features)
         if norm > 0:
             features /= norm
+        
+        if self.device == 'cuda':
+            torch.cuda.empty_cache()
+
 
         return features
