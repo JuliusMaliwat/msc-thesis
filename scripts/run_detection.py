@@ -3,6 +3,7 @@ from tracking_framework.utils.config_manager import ConfigManager
 from tracking_framework.factory import DatasetFactory, DetectionFactory
 from tracking_framework.utils.io import save_bev_txt, save_metrics
 from tracking_framework.utils.evaluator import evaluate_detection
+import os
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run detection step")
@@ -33,6 +34,9 @@ def main():
     print("Evaluating detection results...")
 
     ground_truth = dataset.get_ground_truth(split="test", with_tracking=False)
+
+    # TODO: remove after debug
+    save_bev_txt(ground_truth, os.path.join(args.experiment_dir, "gt.txt"))
 
     metrics = evaluate_detection(ground_truth, detections)
     save_metrics(metrics, config.detection_metrics_output_path)
