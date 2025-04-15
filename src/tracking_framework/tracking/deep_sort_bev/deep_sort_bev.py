@@ -127,9 +127,11 @@ class DeepSortBEVTracker(BaseTracker):
         """
         # Crop directly from dataset, no more Cropper class
         crops = {}
+        print("Cropping...")
         for frame_id, x, y in detections:
             crops[(frame_id, x, y)] = dataset.get_crop_from_bev(frame_id, x, y)
 
+        print("Embedding....")
         embeddings = self.embedder.compute(crops)
 
         embedding_dict = {
