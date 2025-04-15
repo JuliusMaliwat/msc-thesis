@@ -39,6 +39,7 @@ EXPERIMENT_DIR="experiments/${TIMESTAMP}_${CONFIG_NAME}"
 mkdir -p "$EXPERIMENT_DIR"
 
 export PYTHONPATH=$(pwd)/src:$(pwd)/external/MVDeTr
+export PYTHONWARNINGS="ignore::DeprecationWarning"
 
 
 echo "Starting experiment in: $EXPERIMENT_DIR"
