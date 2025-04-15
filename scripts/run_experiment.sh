@@ -77,7 +77,7 @@ echo "Detection completed. Detections saved in: $EXPERIMENT_DIR/detections.txt"
 # ======================================
 
 echo "Running tracking..."
-conda run -n tracking_env python scripts/run_tracker.py --experiment_dir "$EXPERIMENT_DIR"
+conda run -n tracking_env python -u scripts/run_tracker.py --experiment_dir "$EXPERIMENT_DIR"
 
 echo "Tracking completed. Results saved in: $EXPERIMENT_DIR/tracking_output.txt"
 
