@@ -36,9 +36,6 @@ def main():
 
     ground_truth = dataset.get_ground_truth(split="test", with_tracking=False)
 
-    # TODO: remove after debug
-    save_bev_txt(ground_truth, os.path.join(args.experiment_dir, "gt.txt"))
-
     metrics = evaluate_detection(ground_truth, detections)
     save_metrics(metrics, config.detection_metrics_output_path)
 
