@@ -25,8 +25,8 @@ class WildtrackDataset(BaseDataset):
         base_dir = "Data/Wildtrack"
         self.images_dir = os.path.join(base_dir, "Image_subsets")
         self.annotations_dir = os.path.join(base_dir, "annotations_positions")
-        self.intrinsics_dir = os.path.join(base_dir, "calibrations/intrinsics")
-        self.extrinsics_dir = os.path.join(base_dir, "calibrations/extrinsics")
+        self.intrinsics_dir = os.path.join(base_dir, "calibrations/intrinsic_zero")
+        self.extrinsics_dir = os.path.join(base_dir, "calibrations/extrinsic")
 
         # Loaded resources (to be populated by load())
         self.rvecs = []
