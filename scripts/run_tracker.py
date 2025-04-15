@@ -16,6 +16,7 @@ def main():
 
     # Build dataset
     dataset = DatasetFactory.build(config.dataset_config()["name"])
+    dataset.load()
 
     # Build tracker
     tracker_cfg = config.tracking_config()

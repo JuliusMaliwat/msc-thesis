@@ -16,6 +16,7 @@ def main():
 
     # Build dataset
     dataset = DatasetFactory.build(config.dataset_config()["name"])
+    dataset.load()
 
     # Build detector
     detection_cfg = config.detection_config()
