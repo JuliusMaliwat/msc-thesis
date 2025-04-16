@@ -54,7 +54,7 @@ class Embedder:
                 crop_embeddings = []
                 for crop in crop_list:
                     try:
-                        emb = self._compute_single(crop)
+                        emb = self.compute_single(crop)
                     except Exception as e:
                         print(f"⚠️ Error processing crop for key {key}: {e}")
                         emb = np.zeros(512)
@@ -67,7 +67,7 @@ class Embedder:
 
         return embeddings
 
-    def _compute_single(self, crop):
+    def compute_single(self, crop):
         """
         Compute embedding for a single cropped image.
 

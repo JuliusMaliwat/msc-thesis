@@ -5,6 +5,7 @@ from tracking_framework.tracking.deep_sort_bev.embedder import Embedder
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import cdist
 import numpy as np
+from tqdm import tqdm
 
 class DeepSortBEVTracker(BaseTracker):
     """
@@ -116,7 +117,7 @@ class DeepSortBEVTracker(BaseTracker):
 
     def _compute_embeddings(self, detections, dataset):
         """
-        Compute appearance embeddings for all detections.
+        Compute appearance embeddings for all detections, one at a time to save memory.
 
         Args:
             detections (list): List of detections [[frame_id, x, y], ...]
@@ -125,20 +126,31 @@ class DeepSortBEVTracker(BaseTracker):
         Returns:
             dict: Mapping from (frame_id, x, y) to embedding vector
         """
-        # Crop directly from dataset, no more Cropper class
-        crops = {}
-        print("Cropping...")
-        for frame_id, x, y in detections:
-            crops[(frame_id, x, y)] = dataset.get_crop_from_bev(frame_id, x, y)
+        embedding_dict = {}
 
-        print("Embedding....")
-        embeddings = self.embedder.compute(crops)
+        print("Embedding...")
 
-        embedding_dict = {
-            key: emb for key, emb in zip(crops.keys(), embeddings)
-        }
+        for frame_id, x, y in tqdm(detections, desc="Embedding detections"):
+            crops = dataset.get_crop_from_bev(frame_id, x, y)
+
+            if not crops:
+                embedding = np.zeros(512)
+            else:
+                crop_embeddings = []
+                for crop in crops:
+                    try:
+                        emb = self.embedder.compute_single(crop)
+                    except Exception as e:
+                        print(f"⚠️ Error processing crop for ({frame_id}, {x}, {y}): {e}")
+                        emb = np.zeros(512)
+                    crop_embeddings.append(emb)
+
+                embedding = np.mean(crop_embeddings, axis=0)
+
+            embedding_dict[(frame_id, x, y)] = embedding
 
         return embedding_dict
+
 
 # ========================
 # Private helper functions
