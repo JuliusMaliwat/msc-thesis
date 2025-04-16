@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import numpy as np
 import cv2
 import json
-from tdqm import tqdm
+from tqdm import tqdm
 from tracking_framework.datasets.base_dataset import BaseDataset
 
 class WildtrackDataset(BaseDataset):
