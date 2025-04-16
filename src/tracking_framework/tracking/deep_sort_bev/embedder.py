@@ -3,6 +3,7 @@ import torch
 import torchreid
 from PIL import Image
 from torchvision import transforms
+import cv2
 
 class Embedder:
     """
@@ -89,9 +90,5 @@ class Embedder:
         norm = np.linalg.norm(features)
         if norm > 0:
             features /= norm
-        
-        if self.device == 'cuda':
-            torch.cuda.empty_cache()
-
 
         return features
