@@ -146,7 +146,7 @@ class WildtrackDataset(BaseDataset):
 
         projections = self.project_bev_to_image(x_idx, y_idx)
 
-        for proj in tqdm(projections, desc=f"BEV ({frame_id}, {x_idx}, {y_idx})", leave=False):
+        for proj in projections:
             cam_id = proj["cam_id"]
             bbox = proj["bbox"]
             x1, y1, x2, y2 = bbox
