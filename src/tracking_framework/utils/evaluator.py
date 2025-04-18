@@ -102,7 +102,7 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
     import motmetrics as mm
 
     acc = mm.MOTAccumulator(auto_id=True)
-    all_frames = sorted(set(gt_by_frame.keys()) & set(pred_by_frame.keys()))
+    all_frames = sorted(set(gt_by_frame.keys()) | set(pred_by_frame.keys()))
 
     for frame in all_frames:
         gt_data = gt_by_frame.get(frame, [])
@@ -138,7 +138,7 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
         "ID Switches": int(result["num_switches"]),
         "FP": int(result["num_false_positives"]),
         "FN": int(result["num_misses"]),
-        "GT": int(result["num_objects"])
+        "GT": len(ground_truth)
     }
 
 def _group_by_frame(data):
