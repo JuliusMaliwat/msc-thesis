@@ -2,7 +2,6 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.optimize import linear_sum_assignment
 from collections import defaultdict
-import motmetrics as mm
 
 def evaluate_detection(predictions, ground_truth, threshold=0.5, unit_scale=0.025):
     """
@@ -99,6 +98,8 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
     """
     gt_by_frame = _group_by_frame(ground_truth)
     pred_by_frame = _group_by_frame(predictions)
+    
+    import motmetrics as mm
 
     acc = mm.MOTAccumulator(auto_id=True)
     all_frames = sorted(set(gt_by_frame.keys()) & set(pred_by_frame.keys()))
