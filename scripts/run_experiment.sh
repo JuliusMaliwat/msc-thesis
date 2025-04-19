@@ -1,8 +1,7 @@
 #!/bin/bash
 
 set -e
-# Auto-set HOME if not defined (to current working directory)
-: "${HOME:=$(pwd)}"
+
 
 # ======================================
 # Parse input arguments
@@ -62,7 +61,7 @@ echo "Selected detector: $DETECTOR"
 
 if [ "$DETECTOR" = "mvdetr" ]; then
   echo "Running detection with MVDetr..."
-  conda run -n mvdetr_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+  HOME=$(pwd) conda run -n mvdetr_env python scripts/run_detection.py ...
 elif [ "$DETECTOR" = "another_model" ]; then
   echo "Running detection with Another Model..."
   conda run -n another_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
