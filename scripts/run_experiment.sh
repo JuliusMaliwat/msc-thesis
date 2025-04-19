@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -e
+# Auto-set HOME if not defined (to current working directory)
+: "${HOME:=$(pwd)}"
 
 # ======================================
 # Parse input arguments
