@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 import argparse
 from tracking_framework.utils.config_manager import ConfigManager
 from tracking_framework.factory import DatasetFactory, DetectionFactory
