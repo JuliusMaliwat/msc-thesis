@@ -3,7 +3,7 @@ from tracking_framework.utils.config_manager import ConfigManager
 from tracking_framework.factory import DatasetFactory, DetectionFactory
 from tracking_framework.utils.io import save_bev_txt, save_metrics
 from tracking_framework.utils.evaluator import evaluate_detection
-import os
+
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run detection step")

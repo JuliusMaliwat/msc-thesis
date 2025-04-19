@@ -40,7 +40,6 @@ EXPERIMENT_DIR="experiments/${TIMESTAMP}_${CONFIG_NAME}"
 mkdir -p "$EXPERIMENT_DIR"
 
 export PYTHONPATH=$(pwd)/src:$(pwd)/external/MVDeTr
-export PYTHONWARNINGS="ignore::DeprecationWarning"
 
 
 echo "Starting experiment in: $EXPERIMENT_DIR"
@@ -61,10 +60,10 @@ echo "Selected detector: $DETECTOR"
 
 if [ "$DETECTOR" = "mvdetr" ]; then
   echo "Running detection with MVDetr..."
-  HOME=$(pwd) conda run -n mvdetr_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+  HOME=$(pwd) PYTHONWARNINGS="ignore::DeprecationWarning" conda run -n mvdetr_env python -u scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
 elif [ "$DETECTOR" = "another_model" ]; then
   echo "Running detection with Another Model..."
-  conda run -n another_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+  PYTHONWARNINGS="ignore::UserWarning" conda run -n another_env python -u scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
 else
   echo "Error: Detector not recognized: $DETECTOR"
   exit 1
