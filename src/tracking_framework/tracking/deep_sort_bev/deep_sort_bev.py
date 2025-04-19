@@ -5,7 +5,6 @@ from tracking_framework.tracking.deep_sort_bev.embedder import Embedder
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import cdist
 import numpy as np
-from tqdm import tqdm
 
 class DeepSortBEVTracker(BaseTracker):
     """
@@ -130,7 +129,7 @@ class DeepSortBEVTracker(BaseTracker):
 
         print("Embedding...")
 
-        for frame_id, x, y in tqdm(detections, desc="Embedding detections"):
+        for frame_id, x, y in detections:
             crops = dataset.get_crop_from_bev(frame_id, x, y)
 
             if not crops:
