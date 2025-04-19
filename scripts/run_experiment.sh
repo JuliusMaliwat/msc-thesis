@@ -60,10 +60,10 @@ echo "Selected detector: $DETECTOR"
 
 if [ "$DETECTOR" = "mvdetr" ]; then
   echo "Running detection with MVDetr..."
-  env HOME=$(pwd) PYTHONWARNINGS="ignore::DeprecationWarning" conda run -n mvdetr_env python -u scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+  env HOME=$(pwd) PYTHONWARNINGS="ignore" conda run -n mvdetr_env python scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
 elif [ "$DETECTOR" = "another_model" ]; then
   echo "Running detection with Another Model..."
-  env PYTHONWARNINGS="ignore::UserWarning" conda run -n another_env python -u scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
+  env conda run -n another_env python -u scripts/run_detection.py --experiment_dir "$EXPERIMENT_DIR"
 else
   echo "Error: Detector not recognized: $DETECTOR"
   exit 1
@@ -77,7 +77,7 @@ echo "Detection completed. Detections saved in: $EXPERIMENT_DIR/detections.txt"
 # ======================================
 
 echo "Running tracking..."
-conda run -n tracking_env python -u scripts/run_tracker.py --experiment_dir "$EXPERIMENT_DIR"
+env PYTHONWARNINGS="ignore::UserWarning" conda run -n tracking_env python scripts/run_tracker.py --experiment_dir "$EXPERIMENT_DIR"
 
 echo "Tracking completed. Results saved in: $EXPERIMENT_DIR/tracking_output.txt"
 
