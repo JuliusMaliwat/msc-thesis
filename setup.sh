@@ -106,6 +106,42 @@ else
   echo "Pretrained model already exists at $MODEL_PATH."
 fi
 
+
+# === Step 4b: Download MultiviewX dataset via Kaggle ===
+echo "=== Step 4b: Download MultiviewX dataset ==="
+MULTIVIEWX_DATA_DIR="Data/MultiviewX"
+MULTIVIEWX_DATA_ZIP="multiviewx.zip"
+MULTIVIEWX_KAGGLE_URL="https://www.kaggle.com/api/v1/datasets/download/juliusmaliwat/multiviewx"
+
+if [ ! -d "$MULTIVIEWX_DATA_DIR" ]; then
+  mkdir -p Data
+  echo "Downloading MultiviewX dataset from Kaggle..."
+  curl -L -u $KAGGLE_USERNAME:$KAGGLE_KEY -o "Data/$MULTIVIEWX_DATA_ZIP" "$MULTIVIEWX_KAGGLE_URL"
+  echo "Unzipping MultiviewX dataset..."
+  unzip "Data/$MULTIVIEWX_DATA_ZIP" -d Data/
+  rm "Data/$MULTIVIEWX_DATA_ZIP"
+  echo "MultiviewX dataset downloaded and extracted."
+else
+  echo "MultiviewX dataset already exists."
+fi
+
+# === Step 5b: Download pretrained MVDeTr model for MultiviewX ===
+echo "=== Step 5b: Download pretrained MVDeTr model for MultiviewX ==="
+MULTIVIEWX_MODEL_DIR="external/MVDeTr/logs/multiviewx"
+MULTIVIEWX_MODEL_CHECKPOINT="pretrained_multiviewx"
+MULTIVIEWX_MODEL_FILE="MultiviewDetector.pth"
+MULTIVIEWX_MODEL_PATH="$MULTIVIEWX_MODEL_DIR/$MULTIVIEWX_MODEL_CHECKPOINT/$MULTIVIEWX_MODEL_FILE"
+MULTIVIEWX_MODEL_GDOWN_ID="1WDMRjEqOiKT-6i5L6NhEeFUomTbhRKJN"
+
+if [ ! -f "$MULTIVIEWX_MODEL_PATH" ]; then
+  mkdir -p "$(dirname "$MULTIVIEWX_MODEL_PATH")"
+  echo "Downloading pretrained MVDeTr model for MultiviewX..."
+  gdown "$MULTIVIEWX_MODEL_GDOWN_ID" -O "$MULTIVIEWX_MODEL_PATH"
+else
+  echo "Pretrained MVDeTr model for MultiviewX already exists at $MULTIVIEWX_MODEL_PATH."
+fi
+
+
 echo "=== Setup completed successfully ==="
 echo "To start working, activate the environment with:"
 echo "conda activate $ENV_NAME"
