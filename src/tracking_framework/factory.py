@@ -34,5 +34,9 @@ class DatasetFactory:
             from tracking_framework.datasets.wildtrack import WildtrackDataset
             return WildtrackDataset()
 
+        elif name == 'multiviewx':
+            from tracking_framework.datasets.multiviewx import MultiviewXDataset
+            return MultiviewXDataset()
+
         else:
             raise ValueError(f"Unknown dataset name: {name}")
