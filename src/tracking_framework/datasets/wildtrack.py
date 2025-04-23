@@ -24,6 +24,7 @@ class WildtrackDataset(BaseDataset):
         super().__init__()
 
         # Hardcoded dataset paths
+        self.name = 'wildtrack'
         base_dir = "Data/Wildtrack"
         self.images_dir = os.path.join(base_dir, "Image_subsets")
         self.annotations_dir = os.path.join(base_dir, "annotations_positions")

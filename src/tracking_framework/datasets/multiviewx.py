@@ -17,6 +17,7 @@ class MultiviewXDataset(BaseDataset):
 
     def __init__(self):
         super().__init__()
+        self.name = 'multiviewx'
         self.base_dir = "Data/MultiviewX"
         self.images_dir = os.path.join(self.base_dir, "Image_subsets")
         self.annotations_dir = os.path.join(self.base_dir, "annotations_positions")
