@@ -29,14 +29,14 @@ if [ ! -f "$CONFIG_PATH" ]; then
   exit 1
 fi
 
-# Generate timestamped experiment directory based on config name
-TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
-EXPERIMENT_DIR="experiments/${TIMESTAMP}_${CONFIG_NAME}"
+EXPERIMENT_DIR="experiments/${CONFIG_NAME}"
+
 
 # ======================================
 # Setup experiment folder
 # ======================================
 
+rm -rf "$EXPERIMENT_DIR"
 mkdir -p "$EXPERIMENT_DIR"
 
 export PYTHONPATH=$(pwd)/src:$(pwd)/external/MVDeTr
