@@ -96,9 +96,12 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
     Returns:
         dict: Evaluation metrics including MOTA, IDF1, IDP, IDR, FP, FN, ID switches, and total GT count.
     """
+    print(f"Len ground_truth dentro evaluate_tracking prima del group by frame: {len(ground_truth)}")  
+
     gt_by_frame = _group_by_frame(ground_truth)
     pred_by_frame = _group_by_frame(predictions)
-    
+    print(f"Len ground_truth dentro evaluate_tracking DOPO il group by frame: {len(ground_truth)}")  
+
     import motmetrics as mm
 
     acc = mm.MOTAccumulator(auto_id=True)
@@ -127,7 +130,7 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
     mh = mm.metrics.create()
     summary = mh.compute(acc, metrics=mm.metrics.motchallenge_metrics, name="tracker")
     result = summary.loc["tracker"].to_dict()
-    print(f"Len ground_truth dentro evaluate_tracking: {len(ground_truth)}")  
+    print(f"Len ground_truth dentro evaluate_tracking appena prima di return: {len(ground_truth)}")  
 
     return {
         "MOTA": round(result["mota"] * 100, 2),
