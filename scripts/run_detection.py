@@ -39,7 +39,7 @@ def main():
 
     ground_truth = dataset.get_ground_truth(split="test", with_tracking=False)
 
-    metrics = evaluate_detection(ground_truth, detections)
+    metrics = evaluate_detection(detections, ground_truth)
     save_metrics(metrics, config.detection_metrics_output_path)
 
 

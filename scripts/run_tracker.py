@@ -38,7 +38,7 @@ def main():
 
     ground_truth = dataset.get_ground_truth(split="test", with_tracking=True)
 
-    metrics = evaluate_tracking(ground_truth, results)
+    metrics = evaluate_tracking(results, ground_truth)
     save_metrics(metrics, config.tracking_metrics_output_path)
 
     print(f"Tracking evaluation results saved to: {config.tracking_metrics_output_path}")
