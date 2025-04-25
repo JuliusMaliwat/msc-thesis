@@ -249,7 +249,7 @@ class WildtrackDataset(BaseDataset):
                     ground_truth.append([frame_id, x_idx, y_idx, track_id])
                 else:
                     ground_truth.append([frame_id, x_idx, y_idx])
-
+        print(f"Loading {len(ground_truth)} for split {split}")
         return ground_truth
 
 
