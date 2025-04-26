@@ -134,18 +134,27 @@ class MultiviewXDataset(BaseDataset):
         projections = self.project_bev_to_image(x_idx, y_idx)
         for proj in projections:
             cam_id = proj["cam_id"]
-            bbox = proj["bbox"]
-            x1, y1, x2, y2 = bbox
+            x1, y1, x2, y2 = proj["bbox"]
             try:
                 img = self.load_image(frame_id, cam_id)
             except (FileNotFoundError, IOError):
                 continue
             h, w = img.shape[:2]
-            if x1 < 0 or y1 < 0 or x2 > w or y2 > h or x2 <= x1 or y2 <= y1:
-                continue
-            crop = img[y1:y2, x1:x2]
-            crops.append(crop)
+
+            if x2 <= 0 or x1 >= w or y2 <= 0 or y1 >= h:
+                continue  
+
+            x1_clipped = max(0, x1)
+            y1_clipped = max(0, y1)
+            x2_clipped = min(w, x2)
+            y2_clipped = min(h, y2)
+
+            if x2_clipped > x1_clipped and y2_clipped > y1_clipped:
+                crop = img[y1_clipped:y2_clipped, x1_clipped:x2_clipped]
+                crops.append(crop)
+
         return crops
+
 
     def get_frame_ids(self):
         return self.frames
