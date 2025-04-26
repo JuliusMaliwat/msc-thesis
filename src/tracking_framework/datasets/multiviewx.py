@@ -76,7 +76,7 @@ class MultiviewXDataset(BaseDataset):
 
 
     def load_image(self, frame_id, cam_id):
-        img_path = os.path.join(self.images_dir, f"C{cam_id + 1}", f"{frame_id:04d}.jpg")
+        img_path = os.path.join(self.images_dir, f"C{cam_id + 1}", f"{frame_id:04d}.png")
         if not os.path.exists(img_path):
             raise FileNotFoundError(f"Image not found: {img_path}")
         img = cv2.imread(img_path)
