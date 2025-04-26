@@ -129,6 +129,8 @@ class DeepSortBEVTracker(BaseTracker):
 
         print("Embedding...")
 
+        missing_crops = 0
+
         for frame_id, x, y in detections:
             crops = dataset.get_crop_from_bev(frame_id, x, y)
 
