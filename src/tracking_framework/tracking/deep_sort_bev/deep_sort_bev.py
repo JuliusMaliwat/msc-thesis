@@ -133,7 +133,10 @@ class DeepSortBEVTracker(BaseTracker):
             crops = dataset.get_crop_from_bev(frame_id, x, y)
 
             if not crops:
+                missing_crops += 1
                 embedding = np.zeros(512)
+                embedding_dict[(frame_id, x, y)] = embedding
+                continue
             else:
                 crop_embeddings = []
                 for crop in crops:
@@ -147,6 +150,8 @@ class DeepSortBEVTracker(BaseTracker):
                 embedding = np.mean(crop_embeddings, axis=0)
 
             embedding_dict[(frame_id, x, y)] = embedding
+        print(f"Detections senza crops: {missing_crops}/{len(detections)}")
+
 
         return embedding_dict
 
