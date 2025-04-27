@@ -14,6 +14,7 @@ class ConfigManager:
         self.embeddings_path = os.path.join(experiment_dir, "embeddings.npy")  # if needed
         self.detection_metrics_output_path = os.path.join(experiment_dir, "detection_metrics.yaml")
         self.tracking_metrics_output_path = os.path.join(experiment_dir, "tracking_metrics.yaml")
+        self.tracking_events_output_path = os.path.join(experiment_dir, "tracking_events.txt")
 
         # Optional future extensions
         self.logs_dir = os.path.join(experiment_dir, "logs")

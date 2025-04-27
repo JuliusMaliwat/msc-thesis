@@ -1,6 +1,7 @@
 # src/tracking_framework/utils/io.py
 
 import yaml
+import pandas as pd
 
 def load_bev_txt(file_path):
     """
@@ -54,3 +55,17 @@ def save_metrics(metrics, output_path):
     """
     with open(output_path, "w") as f:
         yaml.safe_dump(metrics, f)
+
+
+def save_dataframe(df, file_path, sep="\t"):
+    """
+    Save a dataframe to a text file.
+
+    Args:
+        df (pd.DataFrame): DataFrame to save.
+        file_path (str): Output file path.
+        sep (str): Separator (default: tab).
+    """
+    df.to_csv(file_path, sep=sep, index=False)
+
+

@@ -1,6 +1,6 @@
 from tracking_framework.utils.config_manager import ConfigManager
 from tracking_framework.factory import DatasetFactory, TrackerFactory
-from tracking_framework.utils.io import load_bev_txt, save_bev_txt, save_metrics
+from tracking_framework.utils.io import load_bev_txt, save_bev_txt, save_metrics, save_dataframe
 from tracking_framework.utils.evaluator import evaluate_tracking
 
 import argparse
@@ -38,12 +38,13 @@ def main():
 
     ground_truth = dataset.get_ground_truth(split="test", with_tracking=True)
 
-    metrics = evaluate_tracking(results, ground_truth)
+    metrics, error_log_df = evaluate_tracking(results, ground_truth)
     save_metrics(metrics, config.tracking_metrics_output_path)
-
     print(f"Tracking evaluation results saved to: {config.tracking_metrics_output_path}")
-    print(metrics)  # Optional: print to console too
+    print(metrics)  
 
+    save_dataframe(error_log_df, config.tracking_events_output_path)
+    print(f"Tracking events saved to: {config.tracking_events_output_path}")
 
 if __name__ == "__main__":
     main()
