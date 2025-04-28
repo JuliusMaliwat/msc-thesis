@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 from scipy.spatial.distance import cdist
 from scipy.optimize import linear_sum_assignment
@@ -101,6 +100,7 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
         error_log_df (pd.DataFrame): Detailed event log (frame, gt_id, pred_id, error_type, distance).
     """
     import motmetrics as mm
+    import pandas as pd
 
     gt_by_frame = _group_by_frame(ground_truth)
     pred_by_frame = _group_by_frame(predictions)
