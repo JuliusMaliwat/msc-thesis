@@ -1,7 +1,6 @@
 # src/tracking_framework/utils/io.py
 
 import yaml
-import pandas as pd
 
 def load_bev_txt(file_path):
     """
@@ -66,6 +65,7 @@ def save_dataframe(df, file_path, sep="\t"):
         file_path (str): Output file path.
         sep (str): Separator (default: tab).
     """
+    import pandas as pd
     df.to_csv(file_path, sep=sep, index=False)
 
 
