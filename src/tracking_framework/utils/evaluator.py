@@ -137,7 +137,7 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
                 "gt_id": row["OId"],
                 "pred_id": row["HId"],
                 "error_type": row["Type"],
-                "distance": row["Distance"]
+                "distance": row["D"]
             })
 
     mh = mm.metrics.create()
