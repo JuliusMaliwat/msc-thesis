@@ -110,7 +110,7 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
 
     error_log = []
 
-    for frame in all_frames:
+    for i, frame in enumerate(all_frames):
         gt_data = gt_by_frame.get(frame, [])
         pred_data = pred_by_frame.get(frame, [])
 
@@ -130,7 +130,7 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
             dists = mm.distances.norm2squared_matrix(gt_coords, pred_coords, max_d2=threshold**2)
             acc.update(gt_ids, pred_ids, np.sqrt(dists))
 
-        events = acc.events.loc[frame]
+        events = acc.events.loc[i]
         for _, row in events.iterrows():
             error_log.append({
                 "frame": frame,
