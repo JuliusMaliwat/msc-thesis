@@ -19,6 +19,8 @@ class WildtrackDataset(BaseDataset):
     BBOX_WIDTH = 0.5  # meters
     BBOX_HEIGHT = 1.8  # meters
     NB_WIDTH = 480
+    NB_HEIGHT = 1440
+
 
     def __init__(self):
         super().__init__()
@@ -30,6 +32,7 @@ class WildtrackDataset(BaseDataset):
         self.annotations_dir = os.path.join(base_dir, "annotations_positions")
         self.intrinsics_dir = os.path.join(base_dir, "calibrations/intrinsic_zero")
         self.extrinsics_dir = os.path.join(base_dir, "calibrations/extrinsic")
+        self.rectangles_path = os.path.join(base_dir, "rectangles.pom")
 
         # Loaded resources (to be populated by load())
         self.rvecs = []
@@ -37,14 +40,18 @@ class WildtrackDataset(BaseDataset):
         self.camera_matrices = []
         self.dist_coeffs = []
         self.frames = []
+        self.visibility_map = None
+
 
     def load(self):
         """
-        Load intrinsics, extrinsics, and frame IDs.
+        Load intrinsics, extrinsics, frame IDs, and visibility map.
         """
         self.rvecs, self.tvecs = self._load_extrinsics(self.extrinsics_dir)
         self.camera_matrices, self.dist_coeffs = self._load_intrinsics(self.intrinsics_dir)
         self.frames = self._load_frame_ids()
+        self.visibility_map = self._load_visibility_map()
+
 
     def load_image(self, frame_id, cam_id):
         """
@@ -251,6 +258,20 @@ class WildtrackDataset(BaseDataset):
                     ground_truth.append([frame_id, x_idx, y_idx])
         print(f"Loading {len(ground_truth)} for split {split}")
         return ground_truth
+    def get_visibility(self, x_idx, y_idx):
+        """
+        Return how many cameras can see the BEV cell at (x_idx, y_idx).
+
+        Args:
+            x_idx (int): BEV grid x-index
+            y_idx (int): BEV grid y-index
+
+        Returns:
+            int: Number of cameras seeing the position
+        """
+        if self.visibility_map is None:
+            raise RuntimeError("Call load() before accessing visibility.")
+        return self.visibility_map[y_idx, x_idx]
 
 
     # =========================
@@ -315,3 +336,33 @@ class WildtrackDataset(BaseDataset):
         x_idx = positionID % self.NB_WIDTH
         y_idx = positionID // self.NB_WIDTH
         return int(x_idx), int(y_idx)
+    
+    def _load_visibility_map(self):
+        """
+        Load the visibility map from rectangles.pom into a BEV grid.
+
+        Returns:
+            np.ndarray: [NB_HEIGHT, NB_WIDTH] map of visible camera counts
+        """
+        visibility_map = np.zeros((self.NB_HEIGHT, self.NB_WIDTH), dtype=int)
+
+        with open(self.rectangles_path, "r") as f:
+            for line in f:
+                if not line.startswith("RECTANGLE"):
+                    continue
+
+                parts = line.strip().split()
+                if len(parts) < 3:
+                    continue
+
+                pos_id = int(parts[2])
+                visible = "notvisible" not in line
+
+                if visible:
+                    x_idx, y_idx = self._position_id_to_bev_indices(pos_id)
+                    if 0 <= x_idx < self.NB_WIDTH and 0 <= y_idx < self.NB_HEIGHT:
+                        visibility_map[y_idx, x_idx] += 1
+
+        return visibility_map
+
+
