@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import json
 from tqdm import tqdm
+import numpy as np
 from tracking_framework.datasets.base_dataset import BaseDataset
 
 class WildtrackDataset(BaseDataset):
@@ -16,14 +17,18 @@ class WildtrackDataset(BaseDataset):
     ORIGIN_X = -3.0
     ORIGIN_Y = -9.0
     GRID_STEP = 0.025
+
     BBOX_WIDTH = 0.5  # meters
     BBOX_HEIGHT = 1.8  # meters
+
     NB_WIDTH = 480
     NB_HEIGHT = 1440
 
+    IMG_WIDTH = 1920
+    IMG_HEIGHT = 1080
+
 
     def __init__(self):
-        super().__init__()
 
         # Hardcoded dataset paths
         self.name = 'wildtrack'
@@ -33,7 +38,7 @@ class WildtrackDataset(BaseDataset):
         self.intrinsics_dir = os.path.join(base_dir, "calibrations/intrinsic_zero")
         self.extrinsics_dir = os.path.join(base_dir, "calibrations/extrinsic")
         self.rectangles_path = os.path.join(base_dir, "rectangles.pom")
-
+        self.visibility_map = os.path.join(base_dir, "visibility_map.npy")
         # Loaded resources (to be populated by load())
         self.rvecs = []
         self.tvecs = []
@@ -74,7 +79,7 @@ class WildtrackDataset(BaseDataset):
 
         return img
 
-    def project_bev_to_image(self, x_idx, y_idx):
+    def project_bev_to_image(self, x_idx, y_idx, cam_id = None):
         """
         Project BEV grid coordinate to 2D bounding boxes in all cameras.
 
@@ -90,8 +95,8 @@ class WildtrackDataset(BaseDataset):
         cz = 0.0  # Ground plane
 
         results = []
-
-        for cam_id in range(len(self.camera_matrices)):
+        cameras_to_process = range(len(self.camera_matrices)) if cam_id is None else [cam_id]
+        for cam_id in cameras_to_process:
             R, _ = cv2.Rodrigues(self.rvecs[cam_id])
             T = self.tvecs[cam_id].reshape(3, 1)
             camera_matrix = self.camera_matrices[cam_id]
@@ -189,7 +194,7 @@ class WildtrackDataset(BaseDataset):
             list of int: List of frame IDs used for training.
         """
         return [frame_id for frame_id in self.frames if frame_id <= 1799]
-    
+
     def get_test_frame_ids(self):
         """
         Get list of frame IDs for test split.
@@ -209,7 +214,7 @@ class WildtrackDataset(BaseDataset):
         """
         # Wildtrack ha 7 camere numerate da 0 a 6
         return list(range(7))
-    
+
     def get_ground_truth(self, split=None, with_tracking=False):
         """
         Extract ground truth detections or tracking annotations from WildTrack dataset.
@@ -331,23 +336,31 @@ class WildtrackDataset(BaseDataset):
                     frames.add(frame_num)
 
         return sorted(list(frames))
-    
+
     def _position_id_to_bev_indices(self, positionID):
         x_idx = positionID % self.NB_WIDTH
         y_idx = positionID // self.NB_WIDTH
         return int(x_idx), int(y_idx)
-    
+
+
+
     def _load_visibility_map(self):
         """
-        Load the visibility map from rectangles.pom into a BEV grid.
-
+        Load a weighted visibility map from rectangles.pom using projected bbox area as quality indicator.
         Returns:
-            np.ndarray: [NB_HEIGHT, NB_WIDTH] map of visible camera counts
+            np.ndarray: [NB_HEIGHT, NB_WIDTH] map with weighted visibility scores
         """
-        visibility_map = np.zeros((self.NB_HEIGHT, self.NB_WIDTH), dtype=int)
+        if os.path.exists(self.visibility_map):
+            return np.load(self.visibility_map)
+        
+        print("First time visibility")
+        visibility_map = np.zeros((self.NB_HEIGHT, self.NB_WIDTH), dtype=float)
+
+        # Wildtrack camera resolution
+        img_w, img_h = 1920, 1080
 
         with open(self.rectangles_path, "r") as f:
-            for line in f:
+            for line in tqdm(f, desc="Parsing rectangles.pom"):
                 if not line.startswith("RECTANGLE"):
                     continue
 
@@ -355,14 +368,40 @@ class WildtrackDataset(BaseDataset):
                 if len(parts) < 3:
                     continue
 
+                cam_id = int(parts[1])
                 pos_id = int(parts[2])
                 visible = "notvisible" not in line
 
-                if visible:
-                    x_idx, y_idx = self._position_id_to_bev_indices(pos_id)
-                    if 0 <= x_idx < self.NB_WIDTH and 0 <= y_idx < self.NB_HEIGHT:
-                        visibility_map[y_idx, x_idx] += 1
+                if not visible:
+                    continue
+
+                x_idx, y_idx = self._position_id_to_bev_indices(pos_id)
+                if not (0 <= x_idx < self.NB_WIDTH and 0 <= y_idx < self.NB_HEIGHT):
+                    continue
+
+                # Proietta solo per la camera specifica
+                projection = self.project_bev_to_image(x_idx, y_idx, cam_id=cam_id)
+                if not projection:
+                    continue
+
+                proj = projection[0]  # Singola proiezione
+                x1, y1, x2, y2 = proj["bbox"]
+
+                # Scarta se bbox è fuori immagine o malformato
+                if x1 < 0 or y1 < 0 or x2 > img_w or y2 > img_h or x2 <= x1 or y2 <= y1:
+                    area = 0
+                else:
+                    area = (x2 - x1) * (y2 - y1)
+
+
+                visibility_map[y_idx, x_idx] +=  np.log1p(area)
+
+        visibility_map /= np.max(visibility_map)
+
 
         return visibility_map
+
+
+
 
 
