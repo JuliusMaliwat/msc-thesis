@@ -38,7 +38,7 @@ class WildtrackDataset(BaseDataset):
         self.intrinsics_dir = os.path.join(base_dir, "calibrations/intrinsic_zero")
         self.extrinsics_dir = os.path.join(base_dir, "calibrations/extrinsic")
         self.rectangles_path = os.path.join(base_dir, "rectangles.pom")
-        self.visibility_map = os.path.join(base_dir, "visibility_map.npy")
+        self.visibility_map_path = os.path.join(base_dir, "visibility_map.npy")
         # Loaded resources (to be populated by load())
         self.rvecs = []
         self.tvecs = []
@@ -337,8 +337,8 @@ class WildtrackDataset(BaseDataset):
         Returns:
             np.ndarray: [NB_HEIGHT, NB_WIDTH] map with weighted visibility scores
         """
-        if os.path.exists(self.visibility_map):
-            return np.load(self.visibility_map)
+        if os.path.exists(self.visibility_map_path):
+            return np.load(self.visibility_map_path)
         
         print("First time visibility")
         visibility_map = np.zeros((self.NB_HEIGHT, self.NB_WIDTH), dtype=float)
@@ -385,7 +385,7 @@ class WildtrackDataset(BaseDataset):
 
         visibility_map /= np.max(visibility_map)
 
-
+        np.save(self.visibility_map_path, visibility_map)
         return visibility_map
 
 
