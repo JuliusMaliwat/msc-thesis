@@ -11,6 +11,6 @@ tracking:
     dist_thresh: 0.4
     gating_dist: 40.0
     use_visibility: true
-    visibility_weight: 0.6
+    visibility_weight: 0.4
     vis_score_thresh: 0.8
 
