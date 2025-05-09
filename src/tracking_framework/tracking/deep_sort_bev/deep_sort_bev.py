@@ -75,8 +75,9 @@ class DeepSortBEVTracker(BaseTracker):
 
                 dists_app = cdist(feats_trk, feats_det, metric="cosine")
 
-                if self.use_visibility and hasattr(dataset, "visibility_map"):
+                if self.use_visibility:
                     print("Visibility!")
+                    dataset.load_visibility()
                     for i, (x, y) in enumerate(frame_dets):
                         if 0 <= y < dataset.visibility_map.shape[0] and 0 <= x < dataset.visibility_map.shape[1]:
                             vis_score = dataset.visibility_map[int(y), int(x)]

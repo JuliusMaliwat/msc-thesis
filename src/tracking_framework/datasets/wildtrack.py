@@ -55,8 +55,10 @@ class WildtrackDataset(BaseDataset):
         self.rvecs, self.tvecs = self._load_extrinsics(self.extrinsics_dir)
         self.camera_matrices, self.dist_coeffs = self._load_intrinsics(self.intrinsics_dir)
         self.frames = self._load_frame_ids()
-        self.visibility_map = self._load_visibility_map()
 
+
+    def load_visibility(self):
+        self.visibility_map = self._load_visibility_map()
 
     def load_image(self, frame_id, cam_id):
         """
@@ -328,8 +330,6 @@ class WildtrackDataset(BaseDataset):
         x_idx = positionID % self.NB_WIDTH
         y_idx = positionID // self.NB_WIDTH
         return int(x_idx), int(y_idx)
-
-
 
     def _load_visibility_map(self):
         """
