@@ -263,20 +263,7 @@ class WildtrackDataset(BaseDataset):
                     ground_truth.append([frame_id, x_idx, y_idx])
         print(f"Loading {len(ground_truth)} for split {split}")
         return ground_truth
-    def get_visibility(self, x_idx, y_idx):
-        """
-        Return how many cameras can see the BEV cell at (x_idx, y_idx).
 
-        Args:
-            x_idx (int): BEV grid x-index
-            y_idx (int): BEV grid y-index
-
-        Returns:
-            int: Number of cameras seeing the position
-        """
-        if self.visibility_map is None:
-            raise RuntimeError("Call load() before accessing visibility.")
-        return self.visibility_map[y_idx, x_idx]
 
 
     # =========================

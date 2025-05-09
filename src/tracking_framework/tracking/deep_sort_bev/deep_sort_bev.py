@@ -17,7 +17,8 @@ class DeepSortBEVTracker(BaseTracker):
         self.dist_thresh = params.get("dist_thresh", 0.4)
         self.max_age = params.get("max_age", 4)
         self.gating_dist = params.get("gating_dist", 40.0)
-
+        self.use_visibility = params.get("use_visibility", False)
+        self.visibility_weight = params.get("visibility_weight", 0.15)
         self.trackers = []
 
         # Components
@@ -54,8 +55,8 @@ class DeepSortBEVTracker(BaseTracker):
             unmatched_trackers = list(range(len(self.trackers)))
             unmatched_detections = list(range(len(frame_dets)))
 
-            matches = []
-
+            matches = [] 
+ 
             if predicted and frame_dets:
                 # Motion gating (Euclidean distance)
                 dists_pos = cdist(np.array(predicted), np.array(frame_dets))
@@ -73,6 +74,15 @@ class DeepSortBEVTracker(BaseTracker):
                 ])
 
                 dists_app = cdist(feats_trk, feats_det, metric="cosine")
+
+                if self.use_visibility and hasattr(dataset, "visibility_map"):
+                    print("Visibility!")
+                    for i, (x, y) in enumerate(frame_dets):
+                        if 0 <= y < dataset.visibility_map.shape[0] and 0 <= x < dataset.visibility_map.shape[1]:
+                            vis_score = dataset.visibility_map[int(y), int(x)]
+                            dists_app[:, i] += (1 - vis_score) * self.visibility_weight
+                        else:
+                            print("SOno fuori dalla visiblity")
                 dists_app[~gating_mask] = 1.0  # Penalize impossible matches
 
                 trk_idx, det_idx = linear_sum_assignment(dists_app)
