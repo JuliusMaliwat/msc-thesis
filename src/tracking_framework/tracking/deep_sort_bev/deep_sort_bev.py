@@ -18,7 +18,7 @@ class DeepSortBEVTracker(BaseTracker):
         self.max_age = params.get("max_age", 4)
         self.gating_dist = params.get("gating_dist", 40.0)
         self.use_visibility = params.get("use_visibility", False)
-        self.visibility_weight = params.get("visibility_weight", 0.15)
+        self.visibility_weight = params.get("visibility_weight", 0.4)
         self.trackers = []
 
         # Components
@@ -81,7 +81,8 @@ class DeepSortBEVTracker(BaseTracker):
                     for i, (x, y) in enumerate(frame_dets):
                         if 0 <= y < dataset.visibility_map.shape[0] and 0 <= x < dataset.visibility_map.shape[1]:
                             vis_score = dataset.visibility_map[int(y), int(x)]
-                            dists_app[:, i] += (1 - vis_score) * self.visibility_weight
+                            if vis_score < 0.65:
+                                dists_app[:, i] += ((1 - vis_score) ** 2) * self.visibility_weight
                         else:
                             print("SOno fuori dalla visiblity")
                 dists_app[~gating_mask] = 1.0  # Penalize impossible matches
