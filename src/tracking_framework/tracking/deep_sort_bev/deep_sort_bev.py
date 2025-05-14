@@ -139,9 +139,7 @@ class DeepSortBEVTracker(BaseTracker):
             dict: Mapping from (frame_id, x, y) to embedding vector
         """
         embedding_dict = {}
-
         print("Embedding...")
-
         missing_crops = 0
 
         for frame_id, x, y in detections:
@@ -152,22 +150,28 @@ class DeepSortBEVTracker(BaseTracker):
                 embedding = np.zeros(512)
                 embedding_dict[(frame_id, x, y)] = embedding
                 continue
-            else:
-                crop_embeddings = []
-                for crop in crops:
-                    try:
-                        emb = self.embedder.compute_single(crop)
-                    except Exception as e:
-                        print(f"⚠️ Error processing crop for ({frame_id}, {x}, {y}): {e}")
-                        emb = np.zeros(512)
-                    crop_embeddings.append(emb)
 
-                embedding = np.mean(crop_embeddings, axis=0)
+            crop_embeddings = []
+            weights = []
+
+            for crop in crops:
+                h, w = crop.shape[:2]
+                area = h * w
+                try:
+                    emb = self.embedder.compute_single(crop)
+                except Exception as e:
+                    print(f"⚠️ Error processing crop for ({frame_id}, {x}, {y}): {e}")
+                    emb = np.zeros(512)
+                crop_embeddings.append(emb)
+                weights.append(area)
+
+            weights = np.array(weights, dtype=float)
+            weights /= weights.sum()
+            embedding = np.average(np.vstack(crop_embeddings), axis=0, weights=weights)
 
             embedding_dict[(frame_id, x, y)] = embedding
+
         print(f"Detections senza crops: {missing_crops}/{len(detections)}")
-
-
         return embedding_dict
 
 
