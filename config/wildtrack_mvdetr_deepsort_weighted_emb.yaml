@@ -1,5 +1,5 @@
 dataset:
-  name: multiviewx
+  name: wildtrack
 
 detection:
   name: mvdetr
@@ -11,3 +11,4 @@ tracking:
     dist_thresh: 0.4
     gating_dist: 40.0
     use_weighted_embedding: true
+
