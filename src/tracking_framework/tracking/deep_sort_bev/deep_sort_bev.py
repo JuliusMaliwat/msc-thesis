@@ -20,6 +20,7 @@ class DeepSortBEVTracker(BaseTracker):
         self.use_visibility = params.get("use_visibility", False)
         self.visibility_weight = params.get("visibility_weight", 0.4)
         self.vis_score_thresh = params.get("vis_score_thresh", 0.65)
+        self.use_weighted_embedding = params.get("use_weighted_embedding", False)
         self.trackers = []
 
         # Components
@@ -165,9 +166,12 @@ class DeepSortBEVTracker(BaseTracker):
                 crop_embeddings.append(emb)
                 weights.append(area)
 
-            weights = np.array(weights, dtype=float)
-            weights /= weights.sum()
-            embedding = np.average(np.vstack(crop_embeddings), axis=0, weights=weights)
+            if self.use_weighted_embedding:
+                weights = np.array(weights, dtype=float)
+                weights /= weights.sum()
+                embedding = np.average(np.vstack(crop_embeddings), axis=0, weights=weights)
+            else:
+                embedding = np.mean(crop_embeddings, axis=0)
 
             embedding_dict[(frame_id, x, y)] = embedding
 
