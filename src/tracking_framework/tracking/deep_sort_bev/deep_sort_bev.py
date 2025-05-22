@@ -17,6 +17,7 @@ class DeepSortBEVTracker(BaseTracker):
         self.dist_thresh = params.get("dist_thresh", 0.4)
         self.max_age = params.get("max_age", 4)
         self.gating_dist = params.get("gating_dist", 40.0)
+        self.use_weighted_embedding = params.get("use_weighted_embedding", False)
         self.trackers = []
 
         # Components
