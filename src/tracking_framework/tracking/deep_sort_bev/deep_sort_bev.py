@@ -17,10 +17,6 @@ class DeepSortBEVTracker(BaseTracker):
         self.dist_thresh = params.get("dist_thresh", 0.4)
         self.max_age = params.get("max_age", 4)
         self.gating_dist = params.get("gating_dist", 40.0)
-        self.use_visibility = params.get("use_visibility", False)
-        self.visibility_weight = params.get("visibility_weight", 0.4)
-        self.vis_score_thresh = params.get("vis_score_thresh", 0.65)
-        self.use_weighted_embedding = params.get("use_weighted_embedding", False)
         self.trackers = []
 
         # Components
@@ -77,16 +73,6 @@ class DeepSortBEVTracker(BaseTracker):
 
                 dists_app = cdist(feats_trk, feats_det, metric="cosine")
 
-                if self.use_visibility:
-                    print("Visibility!")
-                    dataset.load_visibility()
-                    for i, (x, y) in enumerate(frame_dets):
-                        if 0 <= y < dataset.visibility_map.shape[0] and 0 <= x < dataset.visibility_map.shape[1]:
-                            vis_score = dataset.visibility_map[int(y), int(x)]
-                            if vis_score < self.vis_score_thresh:
-                                dists_app[:, i] += ((1 - vis_score) ** 2) * self.visibility_weight
-                        else:
-                            print("SOno fuori dalla visiblity")
                 dists_app[~gating_mask] = 1.0  # Penalize impossible matches
 
                 trk_idx, det_idx = linear_sum_assignment(dists_app)
@@ -168,6 +154,7 @@ class DeepSortBEVTracker(BaseTracker):
 
             if self.use_weighted_embedding:
                 weights = np.array(weights, dtype=float)
+                weights = np.sqrt(weights)
                 weights /= weights.sum()
                 embedding = np.average(np.vstack(crop_embeddings), axis=0, weights=weights)
             else:
