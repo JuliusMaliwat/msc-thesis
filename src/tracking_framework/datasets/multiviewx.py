@@ -14,6 +14,7 @@ class MultiviewXDataset(BaseDataset):
     BBOX_WIDTH = 0.32  
     BBOX_HEIGHT = 1.8  
     NB_WIDTH = 1000  
+    M_CAMERAS = 6
 
     def __init__(self):
         super().__init__()
@@ -151,7 +152,7 @@ class MultiviewXDataset(BaseDataset):
 
             if x2_clipped > x1_clipped and y2_clipped > y1_clipped:
                 crop = img[y1_clipped:y2_clipped, x1_clipped:x2_clipped]
-                crops.append(crop)
+                crops.append({"image": crop, "cam_id": cam_id})
 
         return crops
 

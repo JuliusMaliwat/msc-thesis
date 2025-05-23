@@ -1,6 +1,7 @@
 from tracking_framework.tracking.base_tracker import BaseTracker
 from tracking_framework.tracking.deep_sort_bev.deep_kalman import DeepKalmanBoxTracker
 from tracking_framework.tracking.deep_sort_bev.embedder import Embedder
+from tracking_framework.utils.visibility import compute_frame_visibility_scores
 
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import cdist
@@ -115,56 +116,60 @@ class DeepSortBEVTracker(BaseTracker):
 
         return results
 
+
     def _compute_embeddings(self, detections, dataset):
-        """
-        Compute appearance embeddings for all detections, one at a time to save memory.
-
-        Args:
-            detections (list): List of detections [[frame_id, x, y], ...]
-            dataset (object): Dataset object with images and camera parameters
-
-        Returns:
-            dict: Mapping from (frame_id, x, y) to embedding vector
-        """
         embedding_dict = {}
         print("Embedding...")
         missing_crops = 0
 
-        for frame_id, x, y in detections:
-            crops = dataset.get_crop_from_bev(frame_id, x, y)
+        detections_by_frame = _detections_to_frame_dict(detections)
 
-            if not crops:
-                missing_crops += 1
-                embedding = np.zeros(512)
+        for frame_id, dets in detections_by_frame.items():
+            vis_scores = compute_frame_visibility_scores(dataset, dets)  # returns (x, y, cam_id) → vis
+
+            for x, y in dets:
+                crops = dataset.get_crop_from_bev(frame_id, x, y)  # list of {"image": ..., "cam_id": ...}
+
+                if not crops:
+                    missing_crops += 1
+                    embedding_dict[(frame_id, x, y)] = np.zeros(512)
+                    continue
+
+                crop_embeddings = []
+                weights = []
+
+                for crop in crops:
+                    img = crop["image"]
+                    cam_id = crop["cam_id"]
+
+                    try:
+                        emb = self.embedder.compute_single(img)
+                    except Exception as e:
+                        print(f"⚠️ Error processing crop for ({frame_id}, {x}, {y}, cam {cam_id}): {e}")
+                        emb = np.zeros(512)
+
+                    crop_embeddings.append(emb)
+
+                    if self.use_weighted_embedding:
+                        weight = vis_scores.get((x, y, cam_id), 0.0)
+                        weights.append(weight)
+
+                if self.use_weighted_embedding and weights:
+                    weights = np.array(weights, dtype=float)
+                    if weights.sum() > 0:
+                        weights /= weights.sum()
+                        embedding = np.average(np.vstack(crop_embeddings), axis=0, weights=weights)
+                    else:
+                        embedding = np.mean(crop_embeddings, axis=0)
+                else:
+                    embedding = np.mean(crop_embeddings, axis=0)
+
                 embedding_dict[(frame_id, x, y)] = embedding
-                continue
-
-            crop_embeddings = []
-            weights = []
-
-            for crop in crops:
-                h, w = crop.shape[:2]
-                area = h * w
-                try:
-                    emb = self.embedder.compute_single(crop)
-                except Exception as e:
-                    print(f"⚠️ Error processing crop for ({frame_id}, {x}, {y}): {e}")
-                    emb = np.zeros(512)
-                crop_embeddings.append(emb)
-                weights.append(area)
-
-            if self.use_weighted_embedding:
-                weights = np.array(weights, dtype=float)
-                weights = np.sqrt(weights)
-                weights /= weights.sum()
-                embedding = np.average(np.vstack(crop_embeddings), axis=0, weights=weights)
-            else:
-                embedding = np.mean(crop_embeddings, axis=0)
-
-            embedding_dict[(frame_id, x, y)] = embedding
 
         print(f"Detections senza crops: {missing_crops}/{len(detections)}")
         return embedding_dict
+
+
 
 
 # ========================

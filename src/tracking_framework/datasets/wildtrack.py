@@ -27,6 +27,8 @@ class WildtrackDataset(BaseDataset):
     IMG_WIDTH = 1920
     IMG_HEIGHT = 1080
 
+    N_CAMERAS = 7
+
 
     def __init__(self):
 
@@ -147,24 +149,17 @@ class WildtrackDataset(BaseDataset):
 
     def get_crop_from_bev(self, frame_id, x_idx, y_idx):
         """
-        Get cropped images for a given BEV detection.
-
-        Args:
-            frame_id (int): Frame ID
-            x_idx (int): X index in the BEV grid
-            y_idx (int): Y index in the BEV grid
+        Get cropped images and their camera IDs for a given BEV detection.
 
         Returns:
-            list: List of cropped image arrays, one per camera
+            list of dicts: [{"image": ..., "cam_id": ...}, ...]
         """
         crops = []
-
         projections = self.project_bev_to_image(x_idx, y_idx)
 
         for proj in projections:
             cam_id = proj["cam_id"]
-            bbox = proj["bbox"]
-            x1, y1, x2, y2 = bbox
+            x1, y1, x2, y2 = proj["bbox"]
 
             try:
                 img = self.load_image(frame_id, cam_id)
@@ -176,9 +171,10 @@ class WildtrackDataset(BaseDataset):
                 continue
 
             crop = img[y1:y2, x1:x2]
-            crops.append(crop)
+            crops.append({"image": crop, "cam_id": cam_id})
 
         return crops
+
 
     def get_frame_ids(self):
         """
