@@ -18,7 +18,14 @@ class DeepSortBEVTracker(BaseTracker):
         self.dist_thresh = params.get("dist_thresh", 0.4)
         self.max_age = params.get("max_age", 4)
         self.gating_dist = params.get("gating_dist", 40.0)
+
+        # tentativo weighted embeddings
         self.use_weighted_embedding = params.get("use_weighted_embedding", False)
+
+        # tentativo 
+        self.use_visibility_switching = params.get("use_visibility_switching", False)
+        self.visibility_switching_thresh = params.get("visibility_switching_thresh", 300.0)
+
         self.trackers = []
 
         # Components
@@ -26,56 +33,63 @@ class DeepSortBEVTracker(BaseTracker):
 
     def run(self, detections, dataset):
         """
-        Run DeepSORT tracking algorithm.
+        Runs the DeepSORT-BEV tracking algorithm with visibility-aware switching between motion and appearance cost.
 
         Args:
-            detections (list): List of detections [[frame_id, x, y], ...]
-            dataset (object): Dataset object with camera intrinsics/extrinsics, images, etc.
+            detections (list): List of detections formatted as [frame_id, x, y].
+            dataset (object): Dataset interface providing images, intrinsics/extrinsics, and crops.
 
         Returns:
             list: Tracking results [[frame_id, x, y, track_id], ...]
         """
         results = []
+        matching_log = []  # [frame_id, track_id, det_idx, metric_used]
 
-        # Step 1: Extract crops and compute embeddings
-        print("Extracting crops and computing embeddings...")
         embedding_dict = self._compute_embeddings(detections, dataset)
-
-        # Step 2: Prepare detections by frame
-        print("Prepare detections by frame...")
         detections_by_frame = _detections_to_frame_dict(detections)
 
-
-        print("Starting algo...")
         for frame_id in sorted(detections_by_frame.keys()):
             frame_dets = detections_by_frame[frame_id]
+            vis_scores = compute_frame_visibility_scores(dataset, [(x, y) for (x, y) in frame_dets])
 
-            # Predict tracker positions
             predicted = [tracker.predict() for tracker in self.trackers]
             unmatched_trackers = list(range(len(self.trackers)))
             unmatched_detections = list(range(len(frame_dets)))
+            matches = []
 
-            matches = [] 
- 
             if predicted and frame_dets:
-                # Motion gating (Euclidean distance)
                 dists_pos = cdist(np.array(predicted), np.array(frame_dets))
                 gating_mask = dists_pos < self.gating_dist
 
-                # Appearance matching (Cosine distance)
                 feats_det = np.stack([
                     embedding_dict.get((frame_id, x, y), np.zeros(512))
                     for (x, y) in frame_dets
                 ])
-
                 feats_trk = np.stack([
                     tracker.get_mean_embedding()
                     for tracker in self.trackers
                 ])
 
-                dists_app = cdist(feats_trk, feats_det, metric="cosine")
+                dists_app = np.ones((len(feats_trk), len(feats_det)))
 
-                dists_app[~gating_mask] = 1.0  # Penalize impossible matches
+                for t_idx, tracker in enumerate(self.trackers):
+                    for d_idx, (x, y) in enumerate(frame_dets):
+                        if not gating_mask[t_idx, d_idx]:
+                            continue
+
+                        vis = sum(v for (xx, yy, _), v in vis_scores.items() if xx == x and yy == y)
+
+                        if self.use_visibility_switching and vis < self.visibility_switching_thresh:
+                            pred_pos = predicted[t_idx]
+                            det_pos = np.array([x, y])
+                            cost = np.linalg.norm(pred_pos - det_pos) / self.gating_dist
+                            dists_app[t_idx, d_idx] = cost
+                        else:
+                            emb_t = feats_trk[t_idx]
+                            emb_d = feats_det[d_idx]
+                            cosine = 1 - np.dot(emb_t, emb_d) / (np.linalg.norm(emb_t) * np.linalg.norm(emb_d) + 1e-6)
+                            cost = cosine / 2
+                            dists_app[t_idx, d_idx] = cost
 
                 trk_idx, det_idx = linear_sum_assignment(dists_app)
 
@@ -83,29 +97,38 @@ class DeepSortBEVTracker(BaseTracker):
                     if dists_app[t, d] < self.dist_thresh:
                         matches.append((t, d))
 
-                # Update unmatched lists
                 unmatched_trackers = [i for i in unmatched_trackers if i not in trk_idx]
                 unmatched_detections = [i for i in unmatched_detections if i not in det_idx]
 
             updated_trackers = []
 
-            # Update matched trackers
             for t, d in matches:
                 tracker = self.trackers[t]
                 tracker.update(frame_dets[d])
-                emb = embedding_dict.get((frame_id, frame_dets[d][0], frame_dets[d][1]), np.zeros(512))
-                tracker.update_appearance(emb)
-                results.append([frame_id, frame_dets[d][0], frame_dets[d][1], tracker.id])
+                x, y = frame_dets[d]
+                emb = embedding_dict.get((frame_id, x, y), np.zeros(512))
+
+                metric_used = "appearance"
+                if self.use_visibility_switching:
+                    vis = sum(v for (xx, yy, _), v in vis_scores.items() if xx == x and yy == y)
+                    if vis < self.visibility_switching_thresh:
+                        metric_used = "motion"
+                    else:
+                        tracker.update_appearance(emb)
+                else:
+                    tracker.update_appearance(emb)
+
+                results.append([frame_id, x, y, tracker.id])
+                matching_log.append([frame_id, tracker.id, d, metric_used])
                 updated_trackers.append(tracker)
 
-            # Create new trackers for unmatched detections
             for d in unmatched_detections:
-                emb = embedding_dict.get((frame_id, frame_dets[d][0], frame_dets[d][1]), np.zeros(512))
-                tracker = DeepKalmanBoxTracker(frame_dets[d], emb)
+                x, y = frame_dets[d]
+                emb = embedding_dict.get((frame_id, x, y), np.zeros(512))
+                tracker = DeepKalmanBoxTracker([x, y], emb)
                 updated_trackers.append(tracker)
-                results.append([frame_id, frame_dets[d][0], frame_dets[d][1], tracker.id])
+                results.append([frame_id, x, y, tracker.id])
 
-            # Keep alive unmatched trackers if within max_age
             for t in unmatched_trackers:
                 tracker = self.trackers[t]
                 tracker.time_since_update += 1
@@ -115,6 +138,7 @@ class DeepSortBEVTracker(BaseTracker):
             self.trackers = updated_trackers
 
         return results
+
 
 
     def _compute_embeddings(self, detections, dataset):
