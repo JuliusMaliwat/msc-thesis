@@ -24,7 +24,7 @@ class DeepSortBEVTracker(BaseTracker):
 
         # tentativo 
         self.use_visibility_switching = params.get("use_visibility_switching", False)
-        self.visibility_switching_thresh = params.get("visibility_switching_thresh", 300.0)
+        self.visibility_switching_thresh = params.get("visibility_switching_thresh", 200.0)
 
         self.trackers = []
 
