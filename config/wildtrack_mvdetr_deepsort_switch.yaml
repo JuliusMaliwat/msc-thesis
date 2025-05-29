@@ -12,5 +12,5 @@ tracking:
     gating_dist: 40.0
     use_weighted_embedding: false
     use_visibility_switching: true
-    visibility_switching_thresh: 300.0
+    visibility_switching_thresh: 200.0
 
