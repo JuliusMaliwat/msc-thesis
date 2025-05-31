@@ -6,17 +6,9 @@ class DeepSortBaseStrategy:
     def __init__(self, params, tracker_cls):
         self.dist_thresh = params.get("dist_thresh", 0.4)
         self.gating_dist = params.get("gating_dist", 40.0)
-        self.tracker_cls = tracker_cls  
+        self.tracker_cls = tracker_cls
 
     def track(self, *, frame_id, trackers, detections, embeddings, dataset, max_age):
-        """
-        Performs matching and update using the base strategy (appearance + motion gating).
-
-        Returns:
-            updated_trackers: list of updated trackers
-            frame_results: list of results in the format [frame_id, x, y, track_id]
-        """
-
         predicted = [trk.predict() for trk in trackers]
         results = []
 
@@ -34,17 +26,8 @@ class DeepSortBaseStrategy:
             trk.get_mean_embedding() for trk in trackers
         ])
 
-        dists_app = np.ones((len(trackers), len(detections)))
-
-        for t_idx, trk in enumerate(trackers):
-            for d_idx, (x, y) in enumerate(detections):
-                if not gating_mask[t_idx, d_idx]:
-                    continue
-                emb_t = feats_trk[t_idx]
-                emb_d = feats_det[d_idx]
-                cosine = 1 - np.dot(emb_t, emb_d) / (np.linalg.norm(emb_t) * np.linalg.norm(emb_d) + 1e-6)
-                cost = cosine / 2
-                dists_app[t_idx, d_idx] = cost
+        dists_app = cdist(feats_trk, feats_det, metric="cosine")
+        dists_app[~gating_mask] = 1.0  
 
         trk_idx, det_idx = linear_sum_assignment(dists_app)
         matches = [(t, d) for t, d in zip(trk_idx, det_idx) if dists_app[t, d] < self.dist_thresh]
@@ -67,7 +50,7 @@ class DeepSortBaseStrategy:
             if d_idx in matched_dets:
                 continue
             emb = embeddings.get((frame_id, x, y), np.zeros(512))
-            new_trk = self.tracker_cls([x, y], emb) 
+            new_trk = self.tracker_cls([x, y], emb)
             updated_trackers.append(new_trk)
             results.append([frame_id, x, y, new_trk.id])
 
