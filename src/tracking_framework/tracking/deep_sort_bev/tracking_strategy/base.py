@@ -12,31 +12,39 @@ class DeepSortBaseStrategy:
         predicted = [trk.predict() for trk in trackers]
         results = []
 
-        if not predicted or not detections:
-            return trackers, results
+        unmatched_trackers = list(range(len(trackers)))
+        unmatched_detections = list(range(len(detections)))
+        matches = []
 
-        dists_pos = cdist(np.array(predicted), np.array(detections))
-        gating_mask = dists_pos < self.gating_dist
+        if predicted and detections:
+            # Motion gating
+            dists_pos = cdist(np.array(predicted), np.array(detections))
+            gating_mask = dists_pos < self.gating_dist
 
-        feats_det = np.stack([
-            embeddings.get((frame_id, x, y), np.zeros(512))
-            for (x, y) in detections
-        ])
-        feats_trk = np.stack([
-            trk.get_mean_embedding() for trk in trackers
-        ])
+            # Embedding matching
+            feats_det = np.stack([
+                embeddings.get((frame_id, x, y), np.zeros(512))
+                for (x, y) in detections
+            ])
+            feats_trk = np.stack([
+                trk.get_mean_embedding() for trk in trackers
+            ])
 
-        dists_app = cdist(feats_trk, feats_det, metric="cosine")
-        dists_app[~gating_mask] = 1.0  
+            dists_app = cdist(feats_trk, feats_det, metric="cosine")
+            dists_app[~gating_mask] = 1.0  # Penalize impossible matches
 
-        trk_idx, det_idx = linear_sum_assignment(dists_app)
-        matches = [(t, d) for t, d in zip(trk_idx, det_idx) if dists_app[t, d] < self.dist_thresh]
+            trk_idx, det_idx = linear_sum_assignment(dists_app)
 
-        matched_trks = {t for t, _ in matches}
-        matched_dets = {d for _, d in matches}
+            for t, d in zip(trk_idx, det_idx):
+                if dists_app[t, d] < self.dist_thresh:
+                    matches.append((t, d))
+
+            unmatched_trackers = [i for i in range(len(trackers)) if i not in {t for t, _ in matches}]
+            unmatched_detections = [i for i in range(len(detections)) if i not in {d for _, d in matches}]
 
         updated_trackers = []
 
+        # Update matched
         for t, d in matches:
             trk = trackers[t]
             x, y = detections[d]
@@ -46,17 +54,17 @@ class DeepSortBaseStrategy:
             updated_trackers.append(trk)
             results.append([frame_id, x, y, trk.id])
 
-        for d_idx, (x, y) in enumerate(detections):
-            if d_idx in matched_dets:
-                continue
+        # New trackers
+        for d in unmatched_detections:
+            x, y = detections[d]
             emb = embeddings.get((frame_id, x, y), np.zeros(512))
             new_trk = self.tracker_cls([x, y], emb)
             updated_trackers.append(new_trk)
             results.append([frame_id, x, y, new_trk.id])
 
-        for t_idx, trk in enumerate(trackers):
-            if t_idx in matched_trks:
-                continue
+        # Age out old trackers
+        for t in unmatched_trackers:
+            trk = trackers[t]
             trk.time_since_update += 1
             if trk.time_since_update < max_age:
                 updated_trackers.append(trk)
