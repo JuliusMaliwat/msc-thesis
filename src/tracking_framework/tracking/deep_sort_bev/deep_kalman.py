@@ -18,7 +18,7 @@ class DeepKalmanBoxTracker(KalmanBoxTracker):
             initial_embedding (np.ndarray): Initial appearance feature vector (512-dim).
         """
         super().__init__(initial_position)
-        self.appearance_features = [initial_embedding]
+        self.appearance_features = self.appearance_features = [initial_embedding] if initial_embedding is not None else []
 
     def get_mean_embedding(self):
         """
