@@ -111,6 +111,7 @@ class TwoStageMatchingStrategy:
                     t = unmatched_trks[rel_t]
                     d = unmatched_dets[rel_d]
                     if stage2_cost[t, d] < self.motion_dist_thresh:
+                        print("Match con motion!")
                         matches.append((t, d))
                         matched_trks.add(t)
                         matched_dets.add(d)
