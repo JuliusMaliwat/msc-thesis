@@ -77,7 +77,10 @@ class VisibilitySwitchingStrategy:
                 else:
                     cost_mix[t, d] = motion_norm[t, d]
 
-            # 3.4) Hungarian matching on cost_mix
+            # 3.4) Before Hungarian, replace any NaN/inf in cost_mix with 1.0
+            cost_mix = np.nan_to_num(cost_mix, nan=1.0, posinf=1.0, neginf=1.0)
+
+            # 3.5) Hungarian matching on cost_mix
             trk_idx, det_idx = linear_sum_assignment(cost_mix)
             for t, d in zip(trk_idx, det_idx):
                 if cost_mix[t, d] < self.dist_thresh:
@@ -86,7 +89,7 @@ class VisibilitySwitchingStrategy:
             matched_trks = {t for t, _ in matches}
             matched_dets = {d for _, d in matches}
 
-            # 3.5) Determine unmatched lists
+            # 3.6) Determine unmatched lists
             unmatched_trackers = [i for i in range(num_trk) if i not in matched_trks]
             unmatched_detections = [j for j in range(num_det) if j not in matched_dets]
 
