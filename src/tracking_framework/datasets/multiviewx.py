@@ -14,7 +14,7 @@ class MultiviewXDataset(BaseDataset):
     BBOX_WIDTH = 0.32  
     BBOX_HEIGHT = 1.8  
     NB_WIDTH = 1000  
-    M_CAMERAS = 6
+    N_CAMERAS = 6
 
     def __init__(self):
         super().__init__()
