@@ -10,9 +10,14 @@ from tracking_framework.datasets.base_dataset import BaseDataset
 class MultiviewXDataset(BaseDataset):
     ORIGIN_X = 0.0
     ORIGIN_Y = 0.0
-    GRID_STEP = 0.025  
+    GRID_STEP = 0.025
+
     BBOX_WIDTH = 0.32  
     BBOX_HEIGHT = 1.8  
+
+    IMG_WIDTH = 1920
+    IMG_HEIGHT = 1080
+
     NB_WIDTH = 1000  
     N_CAMERAS = 6
 
