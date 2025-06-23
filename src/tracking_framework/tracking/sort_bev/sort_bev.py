@@ -54,7 +54,7 @@ class SortBEV(BaseTracker):
 
                 # Update lists of unmatched trackers and detections
                 unmatched_trackers = [i for i in range(len(self.trackers)) if i not in {t for t, _ in matches}]
-                unmatched_detections = [i for i in range(len(detections)) if i not in {d for _, d in matches}]
+                unmatched_detections = [i for i in range(len(frame_dets)) if i not in {d for _, d in matches}]
 
 
             updated_trackers = []
