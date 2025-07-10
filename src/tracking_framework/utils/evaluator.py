@@ -154,8 +154,12 @@ def evaluate_tracking(predictions, ground_truth, threshold=1.0, unit_scale=0.025
         "ID Switches": int(result["num_switches"]),
         "FP": int(result["num_false_positives"]),
         "FN": int(result["num_misses"]),
-        "GT": len(ground_truth)
+        "GT": len(ground_truth),
+        "MT": round(100 * result["mostly_tracked"] / result["num_unique_objects"], 2),
+        "ML": round(100 * result["mostly_lost"] / result["num_unique_objects"], 2),
+        "num_unique_objects": int(result["num_unique_objects"])
     }
+
 
     error_log_df = pd.DataFrame(error_log)
 

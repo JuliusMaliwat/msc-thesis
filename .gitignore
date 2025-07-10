@@ -177,3 +177,5 @@ cython_debug/
 Data/
 external/
 experiments/
+papers/
+img/
