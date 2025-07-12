@@ -12,7 +12,7 @@ def build_tracking_strategy(params):
         return VisibilitySwitchingStrategy(params, tracker_cls=DeepKalmanBoxTracker)
 
     elif strategy_type == "two_stage_visibility":
-        from .two_stage import TwoStageMatchingStrategy
+        from .two_stage_visibility import TwoStageMatchingStrategy
         return TwoStageMatchingStrategy(params, tracker_cls=DeepKalmanBoxTracker)
 
     else:
