@@ -50,6 +50,8 @@ class MVDetrWrapper:
                 img_kernel_size=10,
                 visualize=True,
 
+                train_ratio = 0.0,  # TEMP
+
                 reID=False,
                 semi_supervised=0,
                 id_ratio=0,
@@ -61,7 +63,7 @@ class MVDetrWrapper:
                 dropcam=0.0,
                 epochs=10,
                 lr=5e-4,
-                base_lr_ratio=0.1,
+                baselr_ratio=0.1,
                 weight_decay=1e-4,
                 seed=2021,
                 deterministic=False,
@@ -83,6 +85,8 @@ class MVDetrWrapper:
                 img_reduce=12,
                 img_kernel_size=10,
                 visualize=False,
+
+                train_ratio = 0.0,  # TEMP
 
                 reID=False,
                 semi_supervised=0,
