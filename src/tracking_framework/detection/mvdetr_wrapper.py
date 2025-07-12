@@ -63,7 +63,7 @@ class MVDetrWrapper:
                 dropcam=0.0,
                 epochs=10,
                 lr=5e-4,
-                baselr_ratio=0.1,
+                base_lr_ratio=0.1,
                 weight_decay=1e-4,
                 seed=2021,
                 deterministic=False,
