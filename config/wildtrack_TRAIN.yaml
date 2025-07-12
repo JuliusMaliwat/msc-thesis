@@ -1,0 +1,11 @@
+dataset:
+  name: wildtrack
+
+detection:
+  name: mvdetr
+
+tracking:
+  name: sort_bev
+  params:
+    max_age: 9
+    dist_thresh: 60
