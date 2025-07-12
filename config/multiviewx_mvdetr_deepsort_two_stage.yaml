@@ -1,0 +1,15 @@
+dataset:
+  name: multiviewx
+
+detection:
+  name: mvdetr
+
+tracking:
+  name: deep_sort_bev
+  params:
+    tracking_strategy: two_stage_visibility
+    max_age: 4
+    app_dist_thresh: 0.4
+    motion_dist_thresh: 40.0
+    gating_dist: 40.0
+
