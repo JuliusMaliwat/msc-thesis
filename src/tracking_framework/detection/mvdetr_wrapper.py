@@ -49,9 +49,6 @@ class MVDetrWrapper:
                 img_reduce=12,
                 img_kernel_size=10,
                 visualize=True,
-
-                train_ratio = 0.0,  # TEMP
-
                 reID=False,
                 semi_supervised=0,
                 id_ratio=0,
@@ -85,9 +82,6 @@ class MVDetrWrapper:
                 img_reduce=12,
                 img_kernel_size=10,
                 visualize=False,
-
-                train_ratio = 0.0,  # TEMP
-
                 reID=False,
                 semi_supervised=0,
                 id_ratio=0,
