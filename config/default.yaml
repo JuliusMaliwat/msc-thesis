@@ -7,5 +7,5 @@ detection:
 tracking:
   name: sort_bev
   params:
-    max_age: 9
-    dist_thresh: 60
+    max_age: 10
+    dist_thresh: 40
