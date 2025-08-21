@@ -64,6 +64,7 @@ class TwoStageMatchingStrategy:
             unmatched_dets = [j for j in range(num_det) if j not in matched_dets]
 
             if unmatched_trks and unmatched_dets:
+                print("qualcosa è rimasto!")
                 sub_cost = stage2_cost[np.ix_(unmatched_trks, unmatched_dets)]
                 trk_idx2_rel, det_idx2_rel = linear_sum_assignment(sub_cost)
                 for rel_t, rel_d in zip(trk_idx2_rel, det_idx2_rel):
