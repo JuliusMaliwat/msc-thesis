@@ -9,7 +9,7 @@ tracking:
   params:
     tracking_strategy: two_stage
     max_age: 10
-    app_dist_thresh: 0.2
+    app_dist_thresh: 0.1
     motion_dist_thresh: 40.0
     gating_dist: 40.0
 
