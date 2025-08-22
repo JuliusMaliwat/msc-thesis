@@ -9,5 +9,5 @@ tracking:
   params:
     tracking_strategy : base
     max_age: 10
-    dist_thresh: 0.4
+    dist_thresh: 0.1
     gating_dist: 40.0
