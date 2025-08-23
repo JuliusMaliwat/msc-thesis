@@ -38,8 +38,9 @@ def main():
 
     ground_truth = dataset.get_ground_truth(split="test", with_tracking=True)
 
-    print("len test ground truth: ", len(ground_truth))
-    print("len results: ", len(results))
+    print("len test ground truth: ", len({x[0] for x in ground_truth}))
+    print("len results: ", len({x[0] for x in results})
+)
 
     metrics, error_log_df = evaluate_tracking(results, ground_truth)
     save_metrics(metrics, config.tracking_metrics_output_path)
